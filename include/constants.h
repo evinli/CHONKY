@@ -2,15 +2,13 @@
  * @file      constants.h
  * @author    Creators of CHONKY 
  * @brief     List of all constants used for CHONKY firmware
- * 
- * @copyright Copyright (c) 2022
  */
 
-// include guard that prevents header files from being compiled multiple times
 #pragma once
-
-// include all header file dependencies here
-#include "pins.h"
 
 // constant definitions
 #define ANALOG_READ_RESOLUTION 12
+#define BLINK_COUNT 10
+#define NUM_PWM_PINS 16
+#define NUM_ANALOG_PINS 10
+#define MOTOR_FREQ 1000

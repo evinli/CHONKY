@@ -2,40 +2,42 @@
  * @file      diagnostics.h
  * @author    Creators of CHONKY 
  * @brief     Header file for testing Bluepill functionalities 
- * 
- * @copyright Copyright (c) 2022
  */
 
-// include guard that prevents header files from being compiled multiple times
 #pragma once
 
-// include all header file dependencies here
+#include <Arduino.h>
 #include "pins.h"
+#include "constants.h"
 
 class Diagnostics {
   public:
     /**
-     * @brief Blinks the built-in LED on the Bluepill 
+     * @brief Blinks the built-in LED on the Bluepill 10 times
      */
     static void blinkLED();
 
     /**
      * @brief Forces all pins to give a digital HI output (test using scope)
+     *        Note: PA11 and PA12 will not behave as expected, due to the USB bootloader, 
+     *              need to comment out contens of USBSerial.begin to enable functionality those pins
      */
     static void writeDigital();
 
     /**
      * @brief Forces all PWM-enabled pins to output a PWM signal (test using scope)
+     *        Note: PA11 will not output PWM without disabling USB serial
      */
     static void writePWM();
 
     /**
-     * @brief Pull all digital pins down and print output to the serial monitor
+     * @brief Pull down digital pins and test digitalRead; print output to serial monitor 
+     *        Note: skip PA9 and PA10 since these pins are used for the serial monitor
      */
     static void readDigital();
 
     /**
-     * @brief Pull all analog pins down and print output to the serial monior
+     * @brief Pull down analog pins and test analogRead; print output to serial monitor
      */
     static void readAnalog();
 
