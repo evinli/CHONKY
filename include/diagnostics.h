@@ -19,14 +19,17 @@ class Diagnostics {
 
     /**
      * @brief Forces all pins to give a digital HI output (test using scope)
-     *        Note: PA11 and PA12 will not behave as expected, due to the USB bootloader, 
+     *        Note: PA11 and PA12 will not behave as expected due to the USB bootloader, 
      *              need to comment out contens of USBSerial.begin to enable functionality those pins
+     *        Caution: Disconnect all peripherals before running this
      */
     static void writeDigital();
 
     /**
      * @brief Forces all PWM-enabled pins to output a PWM signal (test using scope)
      *        Note: PA11 will not output PWM without disabling USB serial
+     *        Caution: Disconnect all peripherals before running this
+     *
      */
     static void writePWM();
 

@@ -41,11 +41,12 @@ void Diagnostics::readDigital() {
             pinMode(i, INPUT_PULLDOWN);
             Serial.print(i);
             Serial.print(": ");
-            Serial.print(digitalRead(i));
-            Serial.println();
+            // Serial.println(digitalRead(i));
             delay(500);
         }
     }
+    // pinMode(PB12, INPUT_PULLDOWN);
+    // Serial.println(digitalRead(PB12));
     Serial.end();
 }
 

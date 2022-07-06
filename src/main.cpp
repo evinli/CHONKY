@@ -5,9 +5,11 @@
  */
 
 #include <Arduino.h>
+#include "diagnostics.h"
 
 void setup() {
-
+    // // Diagnostics::blinkLED(); // works!
+    Diagnostics::readAnalog();
 }
 
 void loop() {
