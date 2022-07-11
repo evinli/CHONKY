@@ -9,19 +9,20 @@
 #define LED_BUILTIN PB_2
 
 // MOTORS
+// pwm_start function requires pins to be of PinName type
 #define RIGHT_MOTOR_A PB_8 
 #define RIGHT_MOTOR_B PB_9 
 #define LEFT_MOTOR_A PA_2
 #define LEFT_MOTOR_B PA_3
 
 // REFLECTANCE SENSORS
-#define LEFT_TAPE_SENSOR PB_0
-#define RIGHT_TAPE_SENSOR PB_1
-#define LEFT_EDGE_SENSOR PA_6
-#define RIGHT_EDGE_SENSOR PA_7
+#define LEFT_TAPE_SENSOR PB0
+#define RIGHT_TAPE_SENSOR PB1
+#define LEFT_EDGE_SENSOR PA6
+#define RIGHT_EDGE_SENSOR PA7
 
 // OLED SCREEN
-#define OLED_CLOCK PB_6
-#define OLED_DATA PB_7
+#define OLED_CLOCK PB6
+#define OLED_DATA PB7
 
-#define LED_BUILTIN PB_2
+#define LED_BUILTIN PB2

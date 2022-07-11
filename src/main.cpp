@@ -1,5 +1,5 @@
 /**
- * @file      main.h
+ * @file      main.cpp
  * @author    Creators of CHONKY 
  * @brief     Main control loop for CHONKY codebase
  */
@@ -15,9 +15,9 @@
 // Class instantiations
 Motor rightMotor(RIGHT_MOTOR_A, RIGHT_MOTOR_B);
 Motor leftMotor(LEFT_MOTOR_A, LEFT_MOTOR_B);
-PID tapeFollow(TapeFollower, &leftMotor, &rightMotor);
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 OLED display(&display_handler);
+PID tapeFollow(TapeFollower, &leftMotor, &rightMotor, &display);
 
 void setup() {
     Serial.begin(9600);
@@ -25,10 +25,8 @@ void setup() {
 }
 
 void loop() {
-    display.clear();
-    display.write(0, "Hello");
     tapeFollow.setMotorSpeed(100);
-    tapeFollow.setKP(0.001);
+    tapeFollow.setKP(0.1);
     tapeFollow.usePID();
-    delay(500);
+    delay(1000);
 }

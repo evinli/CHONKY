@@ -8,7 +8,8 @@
 
 #include "pins.h"
 #include "motor.h"
-#include "adc_utils.h"
+#include "utils.h"
+#include "OLED.h"
 #include <string.h>
 
 typedef enum {
@@ -18,7 +19,7 @@ typedef enum {
 
 class PID {
   public:
-    PID(PIDType pidType, Motor* leftMotor, Motor* rightMotor);
+    PID(PIDType pidType, Motor* leftMotor, Motor* rightMotor, OLED* display);
 
     void setMotorSpeed(int motorSpeed);
 
@@ -38,4 +39,5 @@ class PID {
     int leftSensor, rightSensor;
     Motor* leftMotor;
     Motor* rightMotor;
+    OLED* display;
 };

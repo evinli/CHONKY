@@ -19,6 +19,9 @@
 // MOTORS
 #define MOTOR_FREQ 100
 #define MAP_8_BIT_TO_12_BIT 16
+#define TURN_LEFT 0
+#define TURN_RIGHT 1
+#define GO_STRAIGHT 2
 
 // OLED DISPLAY
 #define SCREEN_WIDTH 128 // OLED display width, in pixels

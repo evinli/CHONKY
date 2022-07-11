@@ -7,9 +7,10 @@
 #include "PID.h"
 
 /////////////////// CONSTRUCTORS ///////////////////
-PID::PID(PIDType pidType, Motor* leftMotor, Motor* rightMotor) {
+PID::PID(PIDType pidType, Motor* leftMotor, Motor* rightMotor, OLED* display) {
     this->leftMotor = leftMotor;
     this->rightMotor = rightMotor;
+    this->display = display;
 
     switch (pidType) {
         case PIDType::TapeFollower: {
@@ -47,22 +48,35 @@ void PID::setKI(float KI) {
 }
 
 void PID::usePID() {
-    // int error = getAvgAnalogValue(leftSensor, 1) - getAvgAnalogValue(rightSensor, 1);
-    int error = 2890;
+    int error = getAvgAnalogValue(leftSensor, 1) - getAvgAnalogValue(rightSensor, 1);
+    Serial.printf("PID error: %d\n", error);
     P = error;
     I += error;
     D = error - previousError;
     previousError = error;
 
+    // (+) modMotorSpeed = tilting right = correct to the left
+    // (-) modMotorSpeed = tilting left = correct to the right
     int modMotorSpeed = P*KP + I*KI + D*KD;
-    int leftMotorSpeed = motorSpeed - modMotorSpeed; // decrease left motor speed if tilting to the right, vice versa
-    int rightMotorSpeed = motorSpeed + modMotorSpeed; // increase right motor speed if tilting to the right, vice versa
+    int leftMotorSpeed = motorSpeed - modMotorSpeed; 
+    int rightMotorSpeed = motorSpeed + modMotorSpeed; 
 
-    Serial.printf("PID left motor speed (no limit): %d\n", leftMotorSpeed);
+    // Set new motor speeds
+    Serial.printf("PID left motor speed: %d\n", leftMotorSpeed);
+    Serial.printf("PID right motor speed): %d\n", rightMotorSpeed);
     leftMotor->setSpeed(leftMotorSpeed);
-
-    Serial.printf("PID left motor speed (no limit): %d\n", rightMotorSpeed);
     rightMotor->setSpeed(rightMotorSpeed);
+
+    // Testing purposes only
+    display->clear();
+    if (leftMotorSpeed < rightMotorSpeed) {
+        display->write(0, "Turning left");
+    }
+    else if (leftMotorSpeed > rightMotorSpeed) {
+        display->write(0, "Turning right");
+    } else {
+        display->write(0, "Going straight");
+    }
 }
 
 
