@@ -5,6 +5,7 @@
  */
 
 #include <Arduino.h>
+#include <string.h>
 #include "diagnostics.h"
 #include "PID.h"
 #include "motor.h"
@@ -14,16 +15,20 @@
 // Class instantiations
 Motor rightMotor(RIGHT_MOTOR_A, RIGHT_MOTOR_B);
 Motor leftMotor(LEFT_MOTOR_A, LEFT_MOTOR_B);
+PID tapeFollow(TapeFollower, &leftMotor, &rightMotor);
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 OLED display(&display_handler);
 
 void setup() {
+    Serial.begin(9600);
     display.setUp();
 }
 
 void loop() {
-    // display_handler.setCursor(0,0);
-    // display_handler.print("CHONKY 2022");
-    // display_handler.display();  
-    // // display.print(); 
+    display.clear();
+    display.write(0, "Hello");
+    tapeFollow.setMotorSpeed(100);
+    tapeFollow.setKP(0.001);
+    tapeFollow.usePID();
+    delay(500);
 }

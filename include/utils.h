@@ -1,7 +1,7 @@
 /**
- * @file      adc_utils.h
+ * @file      utils.h
  * @author    Creators of CHONKY 
- * @brief     Header file for ADC calculations 
+ * @brief     Header file for common helper functions 
  */
 
 #pragma once
@@ -18,3 +18,10 @@
  * @return average ADC value
  */
 int getAvgAnalogValue(int analogPin, int numReadings);
+
+/**
+ * @brief Sets all the timers to 20ms period; ensures 
+ *        consistency between servos and motors on the same timer
+ */
+void syncTimers();
+

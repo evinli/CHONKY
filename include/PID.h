@@ -9,6 +9,7 @@
 #include "pins.h"
 #include "motor.h"
 #include "adc_utils.h"
+#include <string.h>
 
 typedef enum {
     TapeFollower,
@@ -17,22 +18,24 @@ typedef enum {
 
 class PID {
   public:
-    PID(PIDType pidType, Motor* leftMotor, Motor* rightMotor, int baseSpeed);
+    PID(PIDType pidType, Motor* leftMotor, Motor* rightMotor);
 
-    void setKP(int KP);
+    void setMotorSpeed(int motorSpeed);
 
-    void setKD(int KD);
+    void setKP(float KP);
+
+    void setKD(float KD);
     
-    void setKI(int KI);
+    void setKI(float KI);
 
     void usePID();
 
   private:
     float KP, KD, KI;
+    int motorSpeed;
     int P, I, D;
     int previousError;
     int leftSensor, rightSensor;
     Motor* leftMotor;
     Motor* rightMotor;
-    int baseSpeed;
 };

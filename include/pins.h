@@ -9,8 +9,8 @@
 #define LED_BUILTIN PB_2
 
 // MOTORS
-#define RIGHT_MOTOR_A PB_8 // what's the enum equivalent of this
-#define RIGHT_MOTOR_B PB_9 // what's the enum equivalent of this
+#define RIGHT_MOTOR_A PB_8 
+#define RIGHT_MOTOR_B PB_9 
 #define LEFT_MOTOR_A PA_2
 #define LEFT_MOTOR_B PA_3
 

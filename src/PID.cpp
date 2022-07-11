@@ -7,8 +7,7 @@
 #include "PID.h"
 
 /////////////////// CONSTRUCTORS ///////////////////
-PID::PID(PIDType pidType, Motor* leftMotor, Motor* rightMotor, int baseSpeed) {
-    this->baseSpeed = baseSpeed;
+PID::PID(PIDType pidType, Motor* leftMotor, Motor* rightMotor) {
     this->leftMotor = leftMotor;
     this->rightMotor = rightMotor;
 
@@ -31,30 +30,38 @@ PID::PID(PIDType pidType, Motor* leftMotor, Motor* rightMotor, int baseSpeed) {
 }
 
 /////////////////// METHODS ///////////////////
-void PID::setKP(int KP) {
+void PID::setMotorSpeed(int motorSpeed) {
+    this->motorSpeed = motorSpeed;
+}
+
+void PID::setKP(float KP) {
     this->KP = KP;
 }
 
-void PID::setKD(int KD) {
-     this->KP = KD;
+void PID::setKD(float KD) {
+     this->KD = KD;
 }
     
-void PID::setKI(int KI) {
-     this->KP = KI;
+void PID::setKI(float KI) {
+     this->KI = KI;
 }
 
 void PID::usePID() {
-    int error = getAvgAnalogValue(leftSensor, 1) - getAvgAnalogValue(rightSensor, 1);
+    // int error = getAvgAnalogValue(leftSensor, 1) - getAvgAnalogValue(rightSensor, 1);
+    int error = 2890;
     P = error;
     I += error;
     D = error - previousError;
     previousError = error;
 
     int modMotorSpeed = P*KP + I*KI + D*KD;
-    int leftMotorSpeed = baseSpeed - modMotorSpeed; // decrease left motor speed if tilting to the right, vice versa
-    int rightMotorSpeed = baseSpeed + modMotorSpeed; // increase right motor speed if tilting to the right, vice versa
+    int leftMotorSpeed = motorSpeed - modMotorSpeed; // decrease left motor speed if tilting to the right, vice versa
+    int rightMotorSpeed = motorSpeed + modMotorSpeed; // increase right motor speed if tilting to the right, vice versa
 
+    Serial.printf("PID left motor speed (no limit): %d\n", leftMotorSpeed);
     leftMotor->setSpeed(leftMotorSpeed);
+
+    Serial.printf("PID left motor speed (no limit): %d\n", rightMotorSpeed);
     rightMotor->setSpeed(rightMotorSpeed);
 }
 

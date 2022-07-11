@@ -17,11 +17,14 @@ void OLED::setUp() {
     display->clearDisplay();
     display->setTextColor(SSD1306_WHITE);
     display->setTextSize(1);
-    display->setCursor(0,0);
-    display->println("TEST TEST 2");
-    display->display();
 }
 
-void OLED::write() {
+void OLED::clear() {
+    display->clearDisplay();
+}
 
+void OLED::write(int y_pos, std::string message) {
+    display->setCursor(0,y_pos);
+    display->println(message.c_str());
+    display->display();
 }

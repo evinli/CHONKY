@@ -23,7 +23,6 @@ void Motor::setSpeed(int speed) {
     if (speed < -255) speed = -255;
 
     // TODO: Need to add a delay if motor speed suddenly changes to smooth oscillations
-
     if (speed > 0) {
         pwm_start(pinA, MOTOR_FREQ, speed * MAP_8_BIT_TO_12_BIT, RESOLUTION_12B_COMPARE_FORMAT);
         pwm_start(pinB, MOTOR_FREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);

@@ -12,6 +12,10 @@
 #define NUM_PWM_PINS 16
 #define NUM_ANALOG_PINS 10
 
+// TIMER
+#define NUM_TIMERS 4
+#define TIMER_PERIOD 20
+
 // MOTORS
 #define MOTOR_FREQ 100
 #define MAP_8_BIT_TO_12_BIT 16
