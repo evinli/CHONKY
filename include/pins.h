@@ -6,23 +6,38 @@
 
 #pragma once
 
-#define LED_BUILTIN PB_2
+/////////////////// SHARED ///////////////////
+// MISC
+#define LED_BUILTIN PB2
 
-// MOTORS
-// pwm_start function requires pins to be of PinName type
-#define RIGHT_MOTOR_A PB_8 
-#define RIGHT_MOTOR_B PB_9 
-#define LEFT_MOTOR_A PA_2
-#define LEFT_MOTOR_B PA_3
 
-// REFLECTANCE SENSORS
-#define LEFT_TAPE_SENSOR PB0
-#define RIGHT_TAPE_SENSOR PB1
-#define LEFT_EDGE_SENSOR PA6
-#define RIGHT_EDGE_SENSOR PA7
+/////////////////// MASTER BLUEPILL ///////////////////
+// // SERVOS 
+// #define BASE_PLATE_SERVO PA3
 
 // OLED SCREEN
 #define OLED_CLOCK PB6
 #define OLED_DATA PB7
 
-#define LED_BUILTIN PB2
+/////////////////// SLAVE BLUEPILL ///////////////////
+// MOTORS
+// pwm_start function requires pins to be of PinName type
+#define LEFT_MOTOR_A PB_1
+#define LEFT_MOTOR_B PB_0
+#define RIGHT_MOTOR_A PB_8 
+#define RIGHT_MOTOR_B PB_9
+
+// REFLECTANCE SENSORS
+#define LEFT_TAPE_SENSOR PA3
+#define CENTER_TAPE_SENSOR PA2
+#define RIGHT_TAPE_SENSOR PA1
+#define LEFT_EDGE_SENSOR PB0
+#define RIGHT_EDGE_SENSOR PB1
+
+// IR SENSORS
+#define IR_LEFT_DETECT PA7
+#define IR_RIGHT_DETECT PA6
+
+// // OLED SCREEN
+// #define OLED_CLOCK PB10
+// #define OLED_DATA PB11

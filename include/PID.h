@@ -23,6 +23,8 @@ class PID {
 
     void setMotorSpeed(int motorSpeed);
 
+    // void setThreshold(int threshold);
+
     void setKP(float KP);
 
     void setKD(float KD);
@@ -35,9 +37,16 @@ class PID {
     float KP, KD, KI;
     int motorSpeed;
     int P, I, D;
-    int previousError;
-    int leftSensor, rightSensor;
+    int lastError;
+    // int leftSensorPin, centreSensorPin, rightSensorPin;
+    // int threshold;
+    // int numReadings;
+    PIDType pidType;
     Motor* leftMotor;
     Motor* rightMotor;
     OLED* display;
+
+    bool digitizeReading(int reading, int threshold);
+
+    int getTapeError(bool leftOnWhite, bool centreOnWhite, bool rightOnWhite);
 };

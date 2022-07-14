@@ -19,4 +19,27 @@ typedef enum {
     ZiplineAlign,
     ZiplineDeploy,
     ZiplineDismount,
-} masterStates;
+} MasterState;
+
+class Master {
+  public: 
+    Master();
+
+    MasterState determineState();
+
+    // Used only for debugging
+    void setState(MasterState state);
+    
+  private:
+    MasterState state;
+
+    bool advanceState();
+
+    void signalSlaveAdvance();
+
+    void endSlaveSignal();
+
+    void enableSlave();
+
+    void disableSlave();
+};

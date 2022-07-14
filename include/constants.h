@@ -19,11 +19,19 @@
 // MOTORS
 #define MOTOR_FREQ 100
 #define MAP_8_BIT_TO_12_BIT 16
-#define TURN_LEFT 0
-#define TURN_RIGHT 1
-#define GO_STRAIGHT 2
 
 // OLED DISPLAY
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET -1 // since display does not have a reset pin accessible
+
+// TAPE FOLLOWING
+#define TAPE_WHITE_THRESHOLD 300
+#define TAPE_NUM_READINGS 1
+#define TAPE_KP 0 // need to replace with actual values
+#define TAPE_KD 0 // need to replace with actual values
+#define TAPE_KI 0 // need to replace with actual values
+#define TAPE_ON 0
+#define TAPE_ONE_OFF 1
+#define TAPE_BOTH_OFF 5
+

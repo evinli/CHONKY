@@ -1,7 +1,7 @@
 /**
  * @file      motor.h
  * @author    Creators of CHONKY 
- * @brief     Header file for the motor class 
+ * @brief     Header file for driving motors
  */
 
 #pragma once
