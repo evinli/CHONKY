@@ -24,7 +24,7 @@ void OLED::clear() {
 }
 
 void OLED::write(int y_pos, std::string message) {
-    display->setCursor(0,y_pos);
+    display->setCursor(0, y_pos);
     display->println(message.c_str());
     display->display();
 }

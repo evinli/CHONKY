@@ -16,17 +16,10 @@ PID::PID(PIDType pidType, Motor* leftMotor, Motor* rightMotor, OLED* display) {
 
     switch (pidType) {
         case PIDType::TapeFollower: 
-            // leftSensorPin = LEFT_TAPE_SENSOR;
-            // centreSensorPin = CENTER_TAPE_SENSOR;
-            // rightSensorPin = RIGHT_TAPE_SENSOR;
-            // threshold = TAPE_WHITE_THRESHOLD;
-            // numReadings = TAPE_NUM_READINGS;
             pinMode(LEFT_TAPE_SENSOR, INPUT);
             pinMode(CENTER_TAPE_SENSOR, INPUT);
             pinMode(RIGHT_TAPE_SENSOR, INPUT);
-            KP = TAPE_KP;
-            KD = TAPE_KD;
-            KI = TAPE_KI;
+            KP, KD, KI = 0;
             break;
         
         // case PIDType::EdgeFollower: 
@@ -34,17 +27,13 @@ PID::PID(PIDType pidType, Motor* leftMotor, Motor* rightMotor, OLED* display) {
         //     // rightSensor = RIGHT_EDGE_SENSOR;
         //     break;
         
-        // default: 
-        //     // should never get here
-        //     break;
+        default: 
+            // should never get here
+            break;
     }
 }
 
 /////////////////// METHODS ///////////////////
-// void PID::setThreshold(int threshold) {
-//     this->threshold = threshold;
-// }
-
 void PID::setMotorSpeed(int motorSpeed) {
     this->motorSpeed = motorSpeed;
 }
@@ -61,7 +50,7 @@ void PID::setKI(float KI) {
      this->KI = KI;
 }
 
-void PID::usePID() {
+int PID::usePID() {
     // get reflectance sensor readings
     int leftReading = getAvgAnalogValue(LEFT_TAPE_SENSOR, TAPE_NUM_READINGS);
     int centreReading = getAvgAnalogValue(CENTER_TAPE_SENSOR, TAPE_NUM_READINGS);
@@ -76,24 +65,26 @@ void PID::usePID() {
 
     switch (pidType) {
         case PIDType::TapeFollower: 
-            bool leftOnWhite = digitizeReading(leftReading, TAPE_WHITE_THRESHOLD);
-            bool centreOnWhite = digitizeReading(centreReading, TAPE_WHITE_THRESHOLD);
-            bool rightOnWhite = digitizeReading(rightReading, TAPE_WHITE_THRESHOLD);
+            bool leftOnWhite = sensorOnWhite(leftReading, TAPE_WHITE_THRESHOLD);
+            bool centreOnWhite = sensorOnWhite(centreReading, TAPE_WHITE_THRESHOLD);
+            bool rightOnWhite = sensorOnWhite(rightReading, TAPE_WHITE_THRESHOLD);
             error = getTapeError(leftOnWhite, centreOnWhite, rightOnWhite);
             display->write(45, "Error:" + std::to_string(error));
+            if (error == T_STOP) {
+                return error;
+            }
             break;
 
         // case PIDType::EdgeFollower:
         //     break;
         
         // default:
-        //     // hello
-        //     break;
+        //     hello
     }
 
     P = error;
     I += error;
-    D = error - lastError;
+    D = error - lastError; 
     lastError = error;
 
     // (+) modMotorSpeed = tilting right = correct to the left
@@ -102,25 +93,13 @@ void PID::usePID() {
     int leftMotorSpeed = motorSpeed - modMotorSpeed; 
     int rightMotorSpeed = motorSpeed + modMotorSpeed; 
 
-    // Set new motor speeds
-    Serial.printf("PID left motor speed: %d\n", leftMotorSpeed);
-    Serial.printf("PID right motor speed): %d\n", rightMotorSpeed);
+    // set new motor speeds
     leftMotor->setSpeed(leftMotorSpeed);
     rightMotor->setSpeed(rightMotorSpeed);
-
-    // // Testing purposes only
-    // display->clear();
-    // if (leftMotorSpeed < rightMotorSpeed) {
-    //     display->write(0, "Turning left");
-    // }
-    // else if (leftMotorSpeed > rightMotorSpeed) {
-    //     display->write(0, "Turning right");
-    // } else {
-    //     display->write(0, "Going straight"); 
-    // }
+    return error;
 }
 
-bool PID::digitizeReading(int reading, int threshold) {
+bool PID::sensorOnWhite(int reading, int threshold) {
     if (reading < threshold) {
         return true;
     }
@@ -129,29 +108,32 @@ bool PID::digitizeReading(int reading, int threshold) {
 
 int PID::getTapeError(bool leftOnWhite, bool centreOnWhite, bool rightOnWhite) {
     // TRUTH TABLE
-    // leftOnWhite, !centreOnWhite, rightOnWhite: error = 0
-    // !leftOnWhite, !centreOnWhite, !rightOnWhite: error = 0
-    // leftOnWhite, centreOnWhite, !rightOnWhite: error = -1
-    // leftOnWhitee, centreOnWhite, rightOnWhite, lastError = -1: error = -5
-    // !leftOnWhite, centreOnWhite, rightOnWHite: error = 1
-    // leftOnWhitee, centreOnWhite, rightOnWhite, lastError = 1: error = 5
+    // WHITE, WHITE, WHITE, lastError > 0: error = three off 
+    // BLACK, WHITE, WHITE:                error = two off
+    // BLACK, BLACK, WHITE:                error = one off
+    // WHITE, BLACK, WHITE:                error = none off
+    // WHITE, BLACK, BLACK:                error = -one off
+    // WHITE, WHITE, BLACK:                error = -two off
+    // WHITE, WHITE, WHITE, lastError < 0: error = -three off
 
-    // bad code, need to optimize
-    int error = 0;
-    if (leftOnWhite && !centreOnWhite && rightOnWhite) error = TAPE_ON;
-    else if (leftOnWhite && centreOnWhite && !rightOnWhite) error = -TAPE_ONE_OFF;
-    else if (!leftOnWhite && centreOnWhite && rightOnWhite) error = TAPE_ONE_OFF;
-    else if (leftOnWhite && centreOnWhite && rightOnWhite) {
+    int error;
+    if (leftOnWhite && centreOnWhite && rightOnWhite) {
         if (lastError > 0) {
-            error = TAPE_BOTH_OFF; // lost tape completely
+            error = TAPE_THREE_OFF; // lost tape completely
         }
         else if (lastError < 0) {
-            error = -TAPE_BOTH_OFF; // lost tape completely
+            error = -TAPE_THREE_OFF; // lost tape completely
         }
-    }
+    } 
+    else if (!leftOnWhite && centreOnWhite && rightOnWhite) error = TAPE_TWO_OFF;
+    else if (leftOnWhite && centreOnWhite && !rightOnWhite) error = -TAPE_TWO_OFF;
+    else if (!leftOnWhite && !centreOnWhite && rightOnWhite) error = TAPE_ONE_OFF;
+    else if (leftOnWhite && !centreOnWhite && !rightOnWhite) error = -TAPE_ONE_OFF;
+    else if (leftOnWhite && !centreOnWhite && rightOnWhite) error = TAPE_ON;
+    else if (!leftOnWhite && !centreOnWhite && !rightOnWhite) error = T_STOP;
     else error = TAPE_ON;
 
-    return error; // chicken wire
+    return error;
 }
 
 

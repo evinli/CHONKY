@@ -6,12 +6,13 @@
 
 #pragma once
 
-#include <Arduino.h>
+#include "Arduino.h"
+#include "NewPing.h"
+#include "arm.h"
 
 typedef enum {
     Inactive,
     TapeFollowing,
-    ChickenWire,
     Archway,
     IRFollowing,
     EdgeFollowing,
@@ -23,15 +24,18 @@ typedef enum {
 
 class Master {
   public: 
-    Master();
+    Master(NewPing* leftUltrasonic, NewPing* rightUltrasonic, Arm* arm);
 
-    MasterState determineState();
+    void determineState();
 
     // Used only for debugging
     void setState(MasterState state);
     
   private:
     MasterState state;
+    NewPing* leftUltrasonic;
+    NewPing* rightUltrasonic;
+    Arm* arm;
 
     bool advanceState();
 

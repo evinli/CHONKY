@@ -6,13 +6,14 @@
 
 #pragma once
 
-#include <Arduino.h>
+#include "Arduino.h"
+#include "motor.h"
 #include "PID.h"
+#include "OLED.h"
 
 typedef enum {
     Inactive,
     TapeFollowing,
-    ChickenWire,
     Archway,
     IRFollowing,
     EdgeFollowing,
@@ -20,9 +21,9 @@ typedef enum {
 
 class Slave {
   public:
-    Slave(PID* tapeFollow);
+    Slave(Motor* leftMotor, Motor* rightMotor, PID* tapeFollow, OLED* display);
 
-    SlaveState determineState();
+    void determineState();
 
     // Only used for debugging
     void setState(SlaveState state);
@@ -31,7 +32,10 @@ class Slave {
 
   private:
     SlaveState state;
+    Motor* leftMotor;
+    Motor* rightMotor;
     PID* tapeFollow;
-    
+    OLED* display;
+
     bool advanceState();   
 };

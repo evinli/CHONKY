@@ -1,12 +1,12 @@
 /**
  * @file      motor.h
  * @author    Creators of CHONKY 
- * @brief     Header file for driving motors
+ * @brief     Header file for motor actuation
  */
 
 #pragma once
 
-#include <Arduino.h>
+#include "Arduino.h"
 #include "pins.h"
 #include "constants.h"
 

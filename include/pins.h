@@ -7,23 +7,58 @@
 #pragma once
 
 /////////////////// SHARED ///////////////////
-// MISC
-#define LED_BUILTIN PB2
-
-
-/////////////////// MASTER BLUEPILL ///////////////////
-// // SERVOS 
-// #define BASE_PLATE_SERVO PA3
-
 // OLED SCREEN
 #define OLED_CLOCK PB6
 #define OLED_DATA PB7
 
+// SERIAL MONITOR
+#define SERIAL_TX PA9
+#define SERIAL_RX PA10
+
+// MISC
+#define LED_BUILTIN PB2
+
+/////////////////// MASTER BLUEPILL ///////////////////
+// TOUCH SENSORS
+#define UPPER_LIM_SWITCH PB12
+#define LOWER_LIM_SWITCH PB13
+#define ZIPLINE_DETECT PA15
+
+// ULTRSONIC
+#define LEFT_TREASURE_TRIG PB14 
+#define LEFT_TREASURE_ECHO PB15
+#define RIGHT_TREASURE_TRIG PB4
+#define RIGHT_TREASURE_ECHO PB5
+#define CLAW_SCAN_TRIG PB11
+#define CLAW_SCAN_ECHO PB10
+
+// MOTORS
+#define PULLEY_MOTOR_A PB_1
+#define PULLEY_MOTOR_B PB_0
+#define SHOULDER_MOTOR_A PB_8
+#define SHOULDER_MOTOR_B PB_9
+
+// SERVOS 
+#define BASE_PLATE_SERVO PA3
+#define ELBOW_SERVO PA2
+#define CLAW_SERVO PA1
+#define LEAD_SCREW PA7
+
+// POTENTIOMETERS
+#define SHOULDER_POT PA0
+
+// MISC 
+#define HALL_SENSOR PB2
+#define START_BUTTON PA8
+
+// COMMUNICATIONS
+#define MASTER_STOP_DRIVE PA8
+#define MASTER_ADVANCE_STATE PA5
+
 /////////////////// SLAVE BLUEPILL ///////////////////
 // MOTORS
-// pwm_start function requires pins to be of PinName type
-#define LEFT_MOTOR_A PB_1
-#define LEFT_MOTOR_B PB_0
+#define LEFT_MOTOR_A PA_9
+#define LEFT_MOTOR_B PA_10
 #define RIGHT_MOTOR_A PB_8 
 #define RIGHT_MOTOR_B PB_9
 
@@ -31,13 +66,17 @@
 #define LEFT_TAPE_SENSOR PA3
 #define CENTER_TAPE_SENSOR PA2
 #define RIGHT_TAPE_SENSOR PA1
-#define LEFT_EDGE_SENSOR PB0
-#define RIGHT_EDGE_SENSOR PB1
+#define LEFT_EDGE_SENSOR PB1 
+#define RIGHT_EDGE_SENSOR PB0
 
 // IR SENSORS
 #define IR_LEFT_DETECT PA7
 #define IR_RIGHT_DETECT PA6
 
-// // OLED SCREEN
-// #define OLED_CLOCK PB10
-// #define OLED_DATA PB11
+// POTENTIOMETERS
+#define KP_POT PA5
+#define KD_POT PA4
+
+// COMMUNICATIONS
+#define SLAVE_STOP_DRIVE PB12
+#define SLAVE_ADVANCE_STATE PB13

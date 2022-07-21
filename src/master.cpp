@@ -7,12 +7,12 @@
 #include "master.h"
 
 /////////////////// CONSTRUCTORS ///////////////////
-Master::Master() {
-
+Master::Master(NewPing* leftUltrasonic, NewPing* rightUltrasonic, Arm* arm) {
+    
 }
 
 /////////////////// METHODS ///////////////////
-// MasterState Master::determineState() {
+// void Master::determineState() {
 //     // insert communication checks
 
 //     switch(state) {

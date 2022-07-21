@@ -26,12 +26,14 @@
 #define OLED_RESET -1 // since display does not have a reset pin accessible
 
 // TAPE FOLLOWING
-#define TAPE_WHITE_THRESHOLD 300
+#define TAPE_WHITE_THRESHOLD 400
 #define TAPE_NUM_READINGS 1
-#define TAPE_KP 0 // need to replace with actual values
-#define TAPE_KD 0 // need to replace with actual values
-#define TAPE_KI 0 // need to replace with actual values
 #define TAPE_ON 0
 #define TAPE_ONE_OFF 1
-#define TAPE_BOTH_OFF 5
+#define TAPE_TWO_OFF 3
+#define TAPE_THREE_OFF 6
+#define T_STOP -1
+
+// TREASURE DETECTION
+#define IDOL_DISTANCE 30
 
