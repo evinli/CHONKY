@@ -48,6 +48,7 @@ void Slave::determineState() {
 
 
         // case SlaveState::IRFollowing:
+        
 
         // case SlaveState::EdgeFollowing:
 
