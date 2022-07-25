@@ -7,17 +7,17 @@
 #include "arm.h"
 
 /////////////////// CONSTRUCTORS ///////////////////
-Arm::Arm(Motor *shoulder, ServoP *elbow, ServoP *claw, int shoulderSpeed)
+Arm::Arm(Motor *shoulder, ServoP *elbow, ServoP *claw, ServoP *base, int shoulderSpeed)
 {
     this->shoulder = shoulder;
     this->elbow = elbow;
     this->claw = claw;
     this->shoulderSpeed = shoulderSpeed;
+    this->base= base;
 }
 
 /////////////////// METHODS ///////////////////
-void Arm::positionOverTreasure(double distanceFromChassis, double heightAboveGround)
-{
+void Arm::moveInPlane(double distanceFromChassis, double heightAboveGround) {
     double l3=getL3(heightAboveGround, distanceFromChassis);
     double phi=getPhi(l3);
     double theta=getTheta(l3,phi);
@@ -28,8 +28,7 @@ void Arm::positionOverTreasure(double distanceFromChassis, double heightAboveGro
     delay(500);
 }
 
-bool Arm::grabTreasure()
-{
+bool Arm::grabTreasure(){
     return true;
 }
 
@@ -38,18 +37,15 @@ void Arm::moveShoulderJoint(int angle)
     int potValue = analogRead(SHOULDER_POT);
     int inputValue = (angle * (-380) / 90) + 620; // This is the input angle in terms of the potentiometer values
 
-    while (abs(potValue - inputValue) > 5)
-    { 
-        if (potValue < inputValue)
-        {
+    while (abs(potValue - inputValue) > 5) { 
+        if (potValue < inputValue) {
             shoulder->setSpeed(shoulderSpeed);
             while (potValue < inputValue)
             {
                 potValue = analogRead(SHOULDER_POT);
             }
         }
-        else if (potValue > inputValue)
-        {
+        else if (potValue > inputValue) {
             shoulder->setSpeed(-shoulderSpeed);
             while (potValue > inputValue)
             {
@@ -86,4 +82,27 @@ double Arm::getAlpha(double heightAboveGround, double distanceFromChassis){
     double y = heightAboveGround-SHOULDER_HEIGHT;
     double x = distanceFromChassis+SHOULDER_CHASSIS_EDGE_DIST; 
     return ((double(180)/PI)*atan(y/x));
+}
+
+void Arm::rotateBase(int angle){
+    int potValue = analogRead(BASE_POT);
+    int targetValue = (angle * (1023) /(348.7-22.3)) -69.89;
+
+    while (abs(potValue - targetValue) > 5) { 
+        if (potValue < targetValue) {
+            base->write(90);
+            while (potValue < targetValue)
+            {
+                potValue = analogRead(BASE_POT);
+            }
+        }
+        else if (potValue > targetValue) {
+            base->write(75);
+            while (potValue > targetValue)
+            {
+                potValue = analogRead(BASE_POT);
+            }
+        }
+    }
+    base->write(83);
 }

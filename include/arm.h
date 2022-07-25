@@ -12,13 +12,47 @@
 
 class Arm {
     public:
-      Arm(Motor* shoulder, ServoP* elbow, ServoP* claw, int shoulderSpeed);
+      /**
+       * @brief Construct a new Arm object
+       * 
+       * @param shoulder motor for the shoulder joint
+       * @param elbow object for elbow servo (non continuous), assumes 90 is and 0 is 
+       * @param claw object for claw servo
+       * @param base object for continuous base servo
+       * @param shoulderSpeed integer speed, from 0 to 255 for speed of the shoulder motor
+       */
+      Arm(Motor* shoulder, ServoP* elbow, ServoP* claw, ServoP* base, int shoulderSpeed);
 
-      void positionOverTreasure(double distanceFromChassis, double heightAboveGround);
+      /**
+       * @brief move the arm to a specified distance away from the chassis at a specific height while keeping base rotation angle constant
+       * 
+       * @param distanceFromChassis 
+       * @param heightAboveGround 
+       */
+      void moveInPlane(double distanceFromChassis, double heightAboveGround);
 
       bool grabTreasure();
 
+      /**
+       * @brief move the shoulder join to a given angle
+       * 
+       * @param angle 
+       */
       void moveShoulderJoint(int angle);
+
+      /**
+       * @brief 
+       * 
+       * @param angle rotate the base of the arm to a given angel
+       */
+      void rotateBase(int angle);
+
+    private:
+      ServoP* elbow;
+      ServoP* claw;
+      Motor* shoulder;
+      ServoP* base;
+      int shoulderSpeed;
       
       double getL3(double heightAboveGround, double distanceFromChassis);
 
@@ -27,11 +61,5 @@ class Arm {
       double getTheta(double l3, double phi);
 
       double getAlpha(double heightAboveGround, double distanceFromChassis);
-
-    private:
-      ServoP* elbow;
-      ServoP* claw;
-      Motor* shoulder;
-      int shoulderSpeed;
 
 };

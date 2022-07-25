@@ -1,0 +1,18 @@
+
+Arm initial commit Please enter the commit message for your changes. Lines starting
+ with '#' will be ignored, and an empty message aborts the commit.
+ aaaa
+# On branch Arm
+# Your branch is up to date with 'origin/Arm'.
+ a
+# Changes to be committed:
+#	new file:   include/ServoP.h
+#	modified:   include/arm.h
+#	modified:   include/constants.h
+#	modified:   include/motor.h
+#	modified:   include/pins.h
+#	new file:   src/ServoP.cpp
+#	modified:   src/arm.cpp
+#	modified:   src/main.cpp
+#	modified:   src/motor.cpp
+#

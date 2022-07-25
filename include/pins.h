@@ -46,6 +46,7 @@
 
 // POTENTIOMETERS
 #define SHOULDER_POT PA0
+#define BASE_POT PB0
 
 // MISC 
 #define HALL_SENSOR PB2
