@@ -7,21 +7,31 @@
 #pragma once
 
 #include "Arduino.h"
-#include <Servo.h>
 #include "motor.h"
+#include "ServoP.h"
 
 class Arm {
     public:
-      Arm(Motor* shoulder, Servo* elbow, Servo* claw);
+      Arm(Motor* shoulder, ServoP* elbow, ServoP* claw, int shoulderSpeed);
 
-      bool moveElbow(int angle);
-
-      bool moveShoulder(int angle);
+      void positionOverTreasure(double distanceFromChassis, double heightAboveGround);
 
       bool grabTreasure();
 
+      void moveShoulderJoint(int angle);
+      
+      double getL3(double heightAboveGround, double distanceFromChassis);
+
+      double getPhi(double l3);
+
+      double getTheta(double l3, double phi);
+
+      double getAlpha(double heightAboveGround, double distanceFromChassis);
+
     private:
-      Servo* elbow;
-      Servo* claw;
+      ServoP* elbow;
+      ServoP* claw;
       Motor* shoulder;
+      int shoulderSpeed;
+
 };

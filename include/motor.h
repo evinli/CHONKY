@@ -4,7 +4,8 @@
  * @brief     Header file for motor actuation
  */
 
-#pragma once
+#ifndef __MOTOR_H__
+#define __MOTOR_H__
 
 #include "Arduino.h"
 #include "pins.h"
@@ -18,7 +19,7 @@ class Motor {
      * @param pinA PWM pin A 
      * @param pinB PWM pin B
      */
-    Motor(int pinA, int pinB);
+    Motor(PinName pinA, PinName pinB);
 
     /**
      * @brief Set the motor speed to an input speed
@@ -32,8 +33,16 @@ class Motor {
      */
     void stop();
 
+    /**
+     * @brief 
+     * 
+     */
+    void resetMotors();
+
   private:
     PinName pinA;
     PinName pinB;
     int previousSpeed;
 };
+
+#endif //__MOTOR_H__
