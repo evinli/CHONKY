@@ -16,10 +16,6 @@ Motor::Motor(PinName pinA, PinName pinB) {
     pwm_start(pinB, MOTOR_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
 }
 
-void Motor::resetMotors(){
-    pwm_start(PB_8, MOTOR_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
-}
-
 /////////////////// METHODS ///////////////////
 void Motor::setSpeed(int speed) {
 

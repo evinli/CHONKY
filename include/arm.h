@@ -46,13 +46,6 @@ class Arm {
        * @param angle rotate the base of the arm to a given angel
        */
       void rotateBase(int angle);
-
-    private:
-      ServoP* elbow;
-      ServoP* claw;
-      Motor* shoulder;
-      ServoP* base;
-      int shoulderSpeed;
       
       double getL3(double heightAboveGround, double distanceFromChassis);
 
@@ -61,5 +54,14 @@ class Arm {
       double getTheta(double l3, double phi);
 
       double getAlpha(double heightAboveGround, double distanceFromChassis);
+
+      ServoP* elbow;
+      ServoP* claw;
+      Motor* shoulder;
+      ServoP* base;
+      int shoulderSpeed;
+      
+    private:
+      
 
 };

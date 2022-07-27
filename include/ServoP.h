@@ -14,10 +14,19 @@
 
 class ServoP{
     public:
+    /**
+     * @brief Construct a new Servo P object
+     * 
+     * @param pwmPin: pin that connects to the pwm pin of the servo
+     */
     ServoP(PinName pwmPin);
     
+    /**
+     * @brief method to move the servo to a specified angle
+     * 
+     * @param angle 
+     */
     void write(double angle);
-
     double angle;
 
     void resetServo();
