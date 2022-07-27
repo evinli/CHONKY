@@ -93,7 +93,7 @@ class PID {
      * @return true if sensor is not reading 10kHz (reading < threshold)
      * @return false if sensor is reading 10kHz (reading > threshold)
      */
-    bool sensorOffIR(int reading, int threshold);
+    bool sensorOnIR(int reading, int threshold);
 
     /**
      * @brief Determine tape following PID error based on sensor states

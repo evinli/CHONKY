@@ -59,7 +59,6 @@ void PID::setKI(float KI) {
 }
 
 int PID::usePID() {
-
     int error;
     int leftReading;
     int centreReading;
@@ -91,7 +90,6 @@ int PID::usePID() {
         }
         
         case PIDType::IRFollower:{
-
             // get IR sensor readings
             digitalWrite(IR_MOSFET, HIGH);
             delayMicroseconds(300);
@@ -118,12 +116,12 @@ int PID::usePID() {
             display->write(20, "Right Reading:" + std::to_string(rightReading));
             
             // determine sensor state
-            bool left_off_IR = sensorOffIR(leftReading, IR_THRESHOLD);
-            bool centre_off_IR = sensorOffIR(centreReading, IR_THRESHOLD);
-            bool right_off_IR = sensorOffIR(rightReading, IR_THRESHOLD);
+            bool left_on_IR = sensorOnIR(leftReading, IR_THRESHOLD);
+            bool centre_on_IR = sensorOnIR(centreReading, IR_THRESHOLD);
+            bool right_on_IR = sensorOnIR(rightReading, IR_THRESHOLD);
 
             // get error
-            error = getIRError(left_off_IR, centre_off_IR, right_off_IR);
+            error = getIRError(left_on_IR, centre_on_IR, right_on_IR);
 
             // display error
             display->write(30, "Error:" + std::to_string(error));
@@ -160,8 +158,8 @@ bool PID::sensorOnWhite(int reading, int threshold) {
     return false;
 }
 
-bool PID::sensorOffIR(int reading, int threshold) {
-    if (reading < threshold) {
+bool PID::sensorOnIR(int reading, int threshold) {
+    if (reading > threshold) {
         return true;
     }
     return false;
@@ -197,7 +195,7 @@ int PID::getTapeError(bool leftOnWhite, bool centreOnWhite, bool rightOnWhite) {
     return error;
 }
 
-int PID::getIRError(bool left_off_IR, bool centre_off_IR, bool right_off_IR) {
+int PID::getIRError(bool left_on_IR, bool centre_on_IR, bool right_on_IR) {
     // TRUTH TABLE
     // OFF, OFF, OFF, lastError > 0: error = three off 
     // ON, OFF, OFF :                error = two off
@@ -208,30 +206,27 @@ int PID::getIRError(bool left_off_IR, bool centre_off_IR, bool right_off_IR) {
     // OFF, OFF, OFF, lastError < 0: error = -three off
 
     int error;
-    if (left_off_IR && centre_off_IR && right_off_IR) {
+    if (!left_on_IR && !centre_on_IR && !right_on_IR) {
         if (this->lastError > 0) {
             error = IR_THREE_OFF;
         }
         else if (this->lastError < 0) {
             error = -IR_THREE_OFF;
         }
-        else{
-            error=0;
-        }
     }
-    else if (!left_off_IR && centre_off_IR && right_off_IR) {
+    else if (left_on_IR && !centre_on_IR && !right_on_IR) {
         error = IR_TWO_OFF;
     }
-    else if (!left_off_IR && !centre_off_IR && right_off_IR) {
+    else if (left_on_IR && centre_on_IR && !right_on_IR) {
         error = IR_ONE_OFF;
     }
-    else if (left_off_IR && !centre_off_IR && right_off_IR) {
+    else if (!left_on_IR && centre_on_IR && !right_on_IR) {
         error = ON_TEN_K;
     }
-    else if (left_off_IR && !centre_off_IR && !right_off_IR) {
+    else if (!left_on_IR && centre_on_IR && right_on_IR) {
         error = -IR_ONE_OFF;
     }
-    else if (left_off_IR && centre_off_IR && !right_off_IR) {
+    else if (!left_on_IR && !centre_on_IR && right_on_IR) {
         error = -IR_TWO_OFF;
     }
 
