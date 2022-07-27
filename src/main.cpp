@@ -39,13 +39,13 @@ int loopCount=0;
 void setup() {
     display.setUp();
     irFollow.setMotorSpeed(50);
-    irFollow.setKP(1);
+    irFollow.setKP(3);
     // rightMotor.stop();
     // leftMotor.setSpeed(100);
 }
 
 void loop() {
-    // rightMotor.stop();
+    // rightMotor.setSpeed(100);
     // leftMotor.setSpeed(100);
 
     irFollow.usePID();

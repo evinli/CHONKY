@@ -145,6 +145,9 @@ int PID::usePID() {
     int leftMotorSpeed = motorSpeed - modMotorSpeed; 
     int rightMotorSpeed = motorSpeed + modMotorSpeed; 
 
+    display->write(40, "Left Motor Speed: " + std::to_string(leftMotorSpeed));
+    display->write(50, "Rigth Motor Speed: " + std::to_string(rightMotorSpeed));
+    
     // set new motor speeds
     leftMotor->setSpeed(leftMotorSpeed);
     rightMotor->setSpeed(rightMotorSpeed);

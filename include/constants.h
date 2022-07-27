@@ -35,7 +35,7 @@
 #define T_STOP -1
 
 // IR FOLLOWING
-#define IR_THRESHOLD 450
+#define IR_THRESHOLD 190
 #define IR_NUM_READINGS 1
 #define ON_TEN_K 0
 #define IR_ONE_OFF 1
