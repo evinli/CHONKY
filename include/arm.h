@@ -56,7 +56,6 @@ class Arm {
     Servo* elbow;
     Servo* claw;
     Servo* base;
-    Motor* shoulder;
     int shoulderSpeed;
         
     double getHypotenuse(double heightAboveGround, double distanceFromChassis);
@@ -66,8 +65,6 @@ class Arm {
     double getTheta(double hypotenuse, double phi);
 
     double getAlpha(double heightAboveGround, double distanceFromChassis);
-
-    void sweep(double startingDist, double endingDist, double height);      
 
 };
 

@@ -74,7 +74,7 @@ void Arm::rotateBase(int angle){
     base->write(BASE_SERVO_STOP_ANGLE);
 }
 
-void Arm::sweep(double startingDist, double endingDist, double height){
+void Arm::sweep(double startingDist, double endingDist, double height) {
     for(double i=startingDist;i<endingDist;i+=SWEEP_STEP_SIZE){
         moveInPlane(i,height);
 
@@ -87,13 +87,12 @@ double Arm::getHypotenuse(double heightAboveGround, double distanceFromChassis) 
     return sqrt(pow(x, 2) + pow(y, 2));
 }
 
-
 double Arm::getPhi(double hypotenuse) {
-        double l1Squared = pow(BICEP_LENGTH, 2);
-        double l2Squared = pow(FOREARM_LENGTH, 2);
-        double l3Squared = pow(hypotenuse, 2);
-        double acosOut = acos((l1Squared + l2Squared - l3Squared) / (2 * FOREARM_LENGTH * BICEP_LENGTH));
-        return (RAD_TO_DEG * acosOut);
+    double l1Squared = pow(BICEP_LENGTH, 2);
+    double l2Squared = pow(FOREARM_LENGTH, 2);
+    double l3Squared = pow(hypotenuse, 2);
+    double acosOut = acos((l1Squared + l2Squared - l3Squared) / (2 * FOREARM_LENGTH * BICEP_LENGTH));
+    return (RAD_TO_DEG * acosOut);
 }
 
 double Arm::getTheta(double hypotenuse, double phi) {
