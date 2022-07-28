@@ -4,64 +4,66 @@
  * @brief     Header file for arm actuation and control
  */
 
-#pragma once
+#ifndef __ARM_H__
+#define __ARM_H__
 
 #include "Arduino.h"
 #include "motor.h"
-#include "ServoP.h"
+#include "servo.h"
 
 class Arm {
-    public:
-      /**
-       * @brief Construct a new Arm object
-       * 
-       * @param shoulder motor for the shoulder joint
-       * @param elbow object for elbow servo (non continuous), assumes 90 is and 0 is 
-       * @param claw object for claw servo
-       * @param base object for continuous base servo
-       * @param shoulderSpeed integer speed, from 0 to 255 for speed of the shoulder motor
-       */
-      Arm(Motor* shoulder, ServoP* elbow, ServoP* claw, ServoP* base, int shoulderSpeed);
+  public:
+    /**
+     * @brief Construct a new Arm object
+     * 
+     * @param shoulder motor for the shoulder joint
+     * @param elbow object for elbow servo (non continuous), assumes 90 is and 0 is 
+     * @param claw object for claw servo
+     * @param base object for continuous base servo
+     * @param shoulderSpeed speed of shoulder joint motor
+     */
+    Arm(Motor* shoulder, Servo* elbow, Servo* claw, Servo* base, int shoulderSpeed);
 
-      /**
-       * @brief move the arm to a specified distance away from the chassis at a specific height while keeping base rotation angle constant
-       * 
-       * @param distanceFromChassis 
-       * @param heightAboveGround 
-       */
-      void moveInPlane(double distanceFromChassis, double heightAboveGround);
+    /**
+     * @brief Move the arm to a specified distance away from the chassis at a 
+     *        specific height while keeping base rotation angle constant
+     * 
+     * @param distanceFromChassis 
+     * @param heightAboveGround 
+     */
+    void moveInPlane(double distanceFromChassis, double heightAboveGround);
 
-      bool grabTreasure();
+    bool grabTreasure();
 
-      /**
-       * @brief move the shoulder join to a given angle
-       * 
-       * @param angle 
-       */
-      void moveShoulderJoint(int angle);
+    /**
+     * @brief Move the shoulder join to a given angle
+     * 
+     * @param angle 
+     */
+    void moveShoulderJoint(int angle);
 
-      /**
-       * @brief 
-       * 
-       * @param angle rotate the base of the arm to a given angel
-       */
-      void rotateBase(int angle);
-      
-      double getL3(double heightAboveGround, double distanceFromChassis);
+    /**
+     * @brief Rotate the base of the arm to a given angle
+     * 
+     * @param angle
+     */
+    void rotateBase(int angle);
+    
+  private:
+    Motor* shoulder;
+    Servo* elbow;
+    Servo* claw;
+    Servo* base;
+    Motor* shoulder;
+    int shoulderSpeed;
+        
+    double getHypotenuse(double heightAboveGround, double distanceFromChassis);
 
-      double getPhi(double l3);
+    double getPhi(double hypotenuse);
 
-      double getTheta(double l3, double phi);
+    double getTheta(double hypotenuse, double phi);
 
-      double getAlpha(double heightAboveGround, double distanceFromChassis);
-
-      ServoP* elbow;
-      ServoP* claw;
-      Motor* shoulder;
-      ServoP* base;
-      int shoulderSpeed;
-      
-    private:
-      
-
+    double getAlpha(double heightAboveGround, double distanceFromChassis);
 };
+
+#endif // __ARM_H__

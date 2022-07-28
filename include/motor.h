@@ -33,16 +33,9 @@ class Motor {
      */
     void stop();
 
-    /**
-     * @brief 
-     * 
-     */
-    void resetMotors();
-
   private:
     PinName pinA;
     PinName pinB;
-    int previousSpeed;
 };
 
 #endif //__MOTOR_H__

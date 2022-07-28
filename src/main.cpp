@@ -17,14 +17,14 @@
 #include "constants.h"
 
 // Class instantiations
-//Motor rightMotor(RIGHT_MOTOR_A, RIGHT_MOTOR_B);
+// Motor rightMotor(RIGHT_MOTOR_A, RIGHT_MOTOR_B);
 // Motor leftMotor(LEFT_MOTOR_A, LEFT_MOTOR_B);
-ServoP clawServo(CLAW_SERVO); //CLAW SERVO MUST BE INITIALIZED BEFORE SHOULDER DUE TO PIN DEPENDENCY
+Servo clawServo(CLAW_SERVO); //CLAW SERVO MUST BE INITIALIZED BEFORE SHOULDER DUE TO PIN DEPENDENCY
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 OLED display(&display_handler);
 //PID tapeFollow(TapeFollower, &leftMotor, &rightMotor, &display);
-ServoP elbowServo(ELBOW_SERVO);
-ServoP baseServo (BASE_PLATE_SERVO);
+Servo elbowServo(ELBOW_SERVO);
+Servo baseServo (BASE_PLATE_SERVO);
 Motor shoulderMotor(PB_8, PB_9);
 NewPing horizontalSonar(LEFT_TREASURE_TRIG, LEFT_TREASURE_ECHO, 200); // NewPing setup of pins and maximum distance.
 NewPing verticalSonar(RIGHT_TREASURE_TRIG, RIGHT_TREASURE_ECHO, 200);
