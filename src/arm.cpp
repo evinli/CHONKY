@@ -96,7 +96,7 @@ double Arm::getPhi(double hypotenuse) {
 }
 
 double Arm::getTheta(double hypotenuse, double phi) {
-    double aSinVal = asin((FOREARM_LENGTH * sin(phi * RAD_TO_DEG)) / hypotenuse);
+    double aSinVal = asin((FOREARM_LENGTH * sin(phi * DEG_TO_RAD)) / hypotenuse);
     return (RAD_TO_DEG * aSinVal);
 }
 

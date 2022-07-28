@@ -31,18 +31,26 @@
 #define TAPE_THREE_OFF 6
 #define T_STOP -1
 
+// IR FOLLOWING
+#define IR_THRESHOLD 190
+#define IR_NUM_READINGS 1
+#define ON_TEN_K 0
+#define IR_ONE_OFF 1
+#define IR_TWO_OFF 3
+#define IR_THREE_OFF 6
+
 // SERVO TUNING
 #define SERVO_ZERO_VALUE 540
 #define SERVO_ONE_EIGHTY_VALUE 2400
 #define SERVO_RANGE 180
 #define BASE_SERVO_STOP_ANGLE 83
 
-//ARM
-const double FOREARM_LENGTH=17;
-const double SHOULDER_HEIGHT=6;
-const double BICEP_LENGTH=17;
-const double SHOULDER_CHASSIS_EDGE_DIST=11;
-const double SWEEP_STEP_SIZE=0.3;
+// ARM
+const double FOREARM_LENGTH = 17;
+const double SHOULDER_HEIGHT = 6;
+const double BICEP_LENGTH = 17;
+const double SHOULDER_CHASSIS_EDGE_DIST = 11;
+const double SWEEP_STEP_SIZE = 0.3;
 
 // POT TUNING
 #define SHOULDER_NINETY 895

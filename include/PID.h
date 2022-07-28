@@ -15,6 +15,7 @@
 typedef enum {
     TapeFollower,
     EdgeFollower,
+    IRFollower,
 } PIDType; // create new alias PIDType as an enum data type
 
 class PID {
@@ -85,6 +86,16 @@ class PID {
     bool sensorOnWhite(int reading, int threshold);
 
     /**
+     * @brief Check if IR sensor is not detecting 10kHz
+     * 
+     * @param reading IR sensor reading
+     * @param threshold cutoff threshold for off IR
+     * @return true if sensor is not reading 10kHz (reading < threshold)
+     * @return false if sensor is reading 10kHz (reading > threshold)
+     */
+    bool sensorOnIR(int reading, int threshold);
+
+    /**
      * @brief Determine tape following PID error based on sensor states
      * 
      * @param leftOnWhite left sensor state
@@ -94,5 +105,13 @@ class PID {
      */
     int getTapeError(bool leftOnWhite, bool centreOnWhite, bool rightOnWhite);
 
-
+    /**
+     * @brief Determine IR following PID error based on sensor states
+     * 
+     * @param leftOffIR left sensor state
+     * @param centreOffIR centre sensor state
+     * @param rightOffIR right sensor state
+     * @return PID error
+     */
+    int getIRError(bool leftOffIR, bool centreOffIR, bool rightOffIR);
 };
