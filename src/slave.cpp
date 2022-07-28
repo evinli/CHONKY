@@ -58,4 +58,5 @@ void Slave::determineState() {
 bool Slave::advanceState() {
     // TODO: need some checks here so that we don't advance states multiple times accidentally
     state = static_cast<SlaveState>(state + 1);
+    return true;
 }
