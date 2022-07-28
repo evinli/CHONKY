@@ -12,12 +12,9 @@
 #define NUM_PWM_PINS 16
 #define NUM_ANALOG_PINS 10
 
-// TIMER
-#define NUM_TIMERS 4
-#define TIMER_PERIOD 20
-
-// MOTORS
+// PWM FREQ
 #define MOTOR_FREQ 100
+#define SERVO_FREQ 50
 #define MAP_8_BIT_TO_12_BIT 16
 
 // OLED DISPLAY
@@ -34,6 +31,31 @@
 #define TAPE_THREE_OFF 6
 #define T_STOP -1
 
-// TREASURE DETECTION
-#define IDOL_DISTANCE 30
+// SERVO TUNING
+#define SERVO_ZERO_VALUE 540
+#define SERVO_ONE_EIGHTY_VALUE 2400
+#define SERVO_RANGE 180
+#define BASE_SERVO_STOP_ANGLE 83
+
+//ARM
+const double FOREARM_LENGTH=17;
+const double SHOULDER_HEIGHT=6;
+const double BICEP_LENGTH=17;
+const double SHOULDER_CHASSIS_EDGE_DIST=11;
+const double SWEEP_STEP_SIZE=0.3;
+
+// POT TUNING
+#define SHOULDER_NINETY 895
+#define SHOULDER_ZERO 530
+#define SHOULDER_RANGE 90
+ // put base pot values here too
+
+// MOTOR 
+#define POT_MOTOR_ERROR 5
+#define SHOULDER_SPEED_OFFSET 20 
+ 
+
+
+
+
 

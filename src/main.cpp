@@ -7,90 +7,100 @@
 #include "Arduino.h"
 #include <string.h>
 #include <NewPing.h>
+//#include "ServoP.h"
 #include <Servo.h>
 #include "PID.h"
 #include "motor.h"
 #include "pins.h"
 #include "OLED.h"
+#include "arm.h"
+#include "constants.h"
 
 // Class instantiations
-Motor rightMotor(RIGHT_MOTOR_A, RIGHT_MOTOR_B);
-Motor leftMotor(LEFT_MOTOR_A, LEFT_MOTOR_B);
-Motor shoulderMotor(SHOULDER_MOTOR_A, SHOULDER_MOTOR_B);
+// Motor rightMotor(RIGHT_MOTOR_A, RIGHT_MOTOR_B);
+// Motor leftMotor(LEFT_MOTOR_A, LEFT_MOTOR_B);
+Servo clawServo(CLAW_SERVO); //CLAW SERVO MUST BE INITIALIZED BEFORE SHOULDER DUE TO PIN DEPENDENCY
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 OLED display(&display_handler);
-PID tapeFollow(TapeFollower, &leftMotor, &rightMotor, &display);
-Servo baseServo;
-Servo leadScrew;
-Servo elbowServo;
-Servo clawServo;
-NewPing sonar(LEFT_TREASURE_TRIG, LEFT_TREASURE_ECHO, 200); // NewPing setup of pins and maximum distance.
-NewPing sonar1(LEFT_TREASURE_TRIG, RIGHT_TREASURE_ECHO, 200);
+//PID tapeFollow(TapeFollower, &leftMotor, &rightMotor, &display);
+Servo elbowServo(ELBOW_SERVO);
+Servo baseServo (BASE_PLATE_SERVO);
+Motor shoulderMotor(PB_8, PB_9);
+NewPing horizontalSonar(LEFT_TREASURE_TRIG, LEFT_TREASURE_ECHO, 200); // NewPing setup of pins and maximum distance.
+NewPing verticalSonar(RIGHT_TREASURE_TRIG, RIGHT_TREASURE_ECHO, 200);
+Arm mainArm(&shoulderMotor,&elbowServo,&clawServo, &baseServo, 150);
 
-// Variable declarations
-float distance;
+int potValue;
+int loopCount=0;                      
+int treasureDistance;
+const int movingAvgRange=50;
+int sonarDist[movingAvgRange];
+int sum;
+int threshold=35;
 
 void setup() {
-    pinMode(SLAVE_ADVANCE_STATE, INPUT_PULLDOWN);
-    pinMode(SLAVE_STOP_DRIVE, INPUT_PULLDOWN);
     display.setUp();
-    // baseServo.attach(BASE_PLATE_SERVO);
-    // leadScrew.attach(LEAD_SCREW);
-    // elbowServo.attach(ELBOW_SERVO);
-    // pinMode(LEFT_TREASURE_TRIG, OUTPUT);
-    // pinMode(LEFT_TREASURE_ECHO, INPUT);
-
+    display.clear();
+    display.write(0,"started");
+    delay(1000);
 }
 
-void loop() {
-    // leftMotor.setSpeed(180);
-    // rightMotor.setSpeed(180);
-    tapeFollow.setMotorSpeed(70);
-    tapeFollow.setKP(8);
-    tapeFollow.setKD(3);
-    tapeFollow.setKI(0);
-    tapeFollow.usePID();
-    // leadScrew.write(0); // cw
-    // delay(2000);
-    // leadScrew.write(86); // still
-    // delay(2000);
-    // leadScrew.write(180); // ccw
-    // delay(2000);
-    // leadScrew.write(86); // still
-    // delay(2000);
+void loop(){
+    //pwm_start(PB_8,100,1000,TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
+    //pwm_start(PB_9,100,1000,TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
+    //mainArm.moveShoulderJoint(90);    
+    //shoulderMotor.setSpeed(-100);
+    //mainArm.rotateBase(180);
 
-    // elbowServo.write(0);
-    // delay(1000);
-    // elbowServo.write(70);
+    // for(int i=0;i<6;i++){
+    //     elbowServo.slowWrite(90,i*10);
+    //     delay(3000);
+    //     elbowServo.slowWrite(45,i*10);
+    //     delay(3000);
+    // }
+    
+    // display.clear();
+    // display.write(0,"done with alpha calc");
+    // double shoulderJointAngle=alpha+theta;
+    // display.clear();
+    // display.write(0,"done with shoulder joint calc");
+    // display.write(0,std::to_string(phi));
+    // display.clear();
+    // display.write(0,"wrote phi");
+    // display.write(0,std::to_string(shoulderJointAngle));
     // delay(500);
-    // elbowServo.write(140);
-    // delay(3000);
+    // mainArm.moveInPlane(3,26);
+    // mainArm.moveInPlane(20,26);
+     mainArm.sweep(3,16,26);
+    // delay(2000);
 
-    // float sum = 0;
-    // for (int i = 0; i < 5; i++) {
-    //     sum += sonar.ping_cm();
-    // }
-    // distance = sum / 5;
-    // if (distance < IDOL_DISTANCE) {
-    //     leftMotor.stop();
-    //     rightMotor.stop();
-    //     display.clear();
-    //     display.write(0, "Idol detected");
-    //     delay(10000);
-    // } else {
-    //     tapeFollow.usePID();
+    // loopCount++;
+    // if (loopCount>30){
+    //     for (int i=0;i<(movingAvgRange-1);i++){
+    //         sonarDist[i]=sonarDist[i+1];
+    //     }
+    //     sonarDist[movingAvgRange-1]=horizontalSonar.ping_cm();
+
+    //     sum=0;
+    //     for (int i=0;i<movingAvgRange;i++){
+    //         sum+=sonarDist[i];
+    //     }
+
+    //     if ((sum/movingAvgRange)<threshold){
+    //         //display.clear();
+    //         //display.write(0,"treasure detected");
+    //         Serial.println("treasure detected");
+    //         slave.stop();
+
+    //     }
+    //     else{
+    //         //display.clear();
+    //     }
+
+    //     Serial.println(sum/movingAvgRange);
+
+    // } else{
+    //     sonarDist[loopCount-1]=horizontalSonar.ping_cm();
     // }
 
-//     // Clears the trigPin condition
-//   digitalWrite(LEFT_TREASURE_TRIG, LOW);
-//   delayMicroseconds(2);
-//   // Sets the trigPin HIGH (ACTIVE) for 10 microseconds
-//   digitalWrite(LEFT_TREASURE_TRIG, HIGH);
-//   delayMicroseconds(10);
-//   digitalWrite(LEFT_TREASURE_TRIG, LOW);
-//   // Reads the echoPin, returns the sound wave travel time in microseconds
-//   duration = pulseIn(LEFT_TREASURE_ECHO, HIGH);
-//   // Calculating the distance
-//   distance = duration * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
-//   // Displays the distance on the Serial Monitor
 }
