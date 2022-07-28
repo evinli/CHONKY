@@ -64,8 +64,7 @@ int PID::usePID() {
     int centreReading;
     int rightReading;
 
-    switch (pidType) {
-                   
+    switch (pidType) {         
         case PIDType::TapeFollower: {
             // get reflectance sensor readings
             leftReading = getAvgAnalogValue(LEFT_TAPE_SENSOR, TAPE_NUM_READINGS);
@@ -116,12 +115,12 @@ int PID::usePID() {
             display->write(20, "Right Reading:" + std::to_string(rightReading));
             
             // determine sensor state
-            bool left_on_IR = sensorOnIR(leftReading, IR_THRESHOLD);
-            bool centre_on_IR = sensorOnIR(centreReading, IR_THRESHOLD);
-            bool right_on_IR = sensorOnIR(rightReading, IR_THRESHOLD);
+            bool leftOnIR = sensorOnIR(leftReading, IR_THRESHOLD);
+            bool centreOnIR = sensorOnIR(centreReading, IR_THRESHOLD);
+            bool rightOnIR = sensorOnIR(rightReading, IR_THRESHOLD);
 
             // get error
-            error = getIRError(left_on_IR, centre_on_IR, right_on_IR);
+            error = getIRError(leftOnIR, centreOnIR, rightOnIR);
 
             // display error
             display->write(30, "Error:" + std::to_string(error));
@@ -178,7 +177,7 @@ int PID::getTapeError(bool leftOnWhite, bool centreOnWhite, bool rightOnWhite) {
     // WHITE, WHITE, BLACK:                error = -two off
     // WHITE, WHITE, WHITE, lastError < 0: error = -three off
 
-    int error;
+    int error = TAPE_ON;
     if (leftOnWhite && centreOnWhite && rightOnWhite) {
         if (lastError > 0) {
             error = TAPE_THREE_OFF; // lost tape completely
@@ -198,7 +197,7 @@ int PID::getTapeError(bool leftOnWhite, bool centreOnWhite, bool rightOnWhite) {
     return error;
 }
 
-int PID::getIRError(bool left_on_IR, bool centre_on_IR, bool right_on_IR) {
+int PID::getIRError(bool leftOnIR, bool centreOnIR, bool rightOnIR) {
     // TRUTH TABLE
     // OFF, OFF, OFF, lastError > 0: error = three off 
     // ON, OFF, OFF :                error = two off
@@ -208,8 +207,8 @@ int PID::getIRError(bool left_on_IR, bool centre_on_IR, bool right_on_IR) {
     // OFF, OFF, ON :                error = -two off
     // OFF, OFF, OFF, lastError < 0: error = -three off
 
-    int error;
-    if (!left_on_IR && !centre_on_IR && !right_on_IR) {
+    int error = ON_TEN_K;
+    if (!leftOnIR && !centreOnIR && !rightOnIR) {
         if (this->lastError > 0) {
             error = IR_THREE_OFF;
         }
@@ -217,19 +216,19 @@ int PID::getIRError(bool left_on_IR, bool centre_on_IR, bool right_on_IR) {
             error = -IR_THREE_OFF;
         }
     }
-    else if (left_on_IR && !centre_on_IR && !right_on_IR) {
+    else if (leftOnIR && !centreOnIR && !rightOnIR) {
         error = IR_TWO_OFF;
     }
-    else if (left_on_IR && centre_on_IR && !right_on_IR) {
+    else if (leftOnIR && centreOnIR && !rightOnIR) {
         error = IR_ONE_OFF;
     }
-    else if (!left_on_IR && centre_on_IR && !right_on_IR) {
+    else if (!leftOnIR && centreOnIR && !rightOnIR) {
         error = ON_TEN_K;
     }
-    else if (!left_on_IR && centre_on_IR && right_on_IR) {
+    else if (!leftOnIR && centreOnIR && rightOnIR) {
         error = -IR_ONE_OFF;
     }
-    else if (!left_on_IR && !centre_on_IR && right_on_IR) {
+    else if (!leftOnIR && !centreOnIR && rightOnIR) {
         error = -IR_TWO_OFF;
     }
 
