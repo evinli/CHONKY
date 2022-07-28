@@ -15,7 +15,7 @@ Arm::Arm(Motor* shoulder, Servo* elbow, Servo* claw, Servo* base, int shoulderSp
     this->shoulderSpeed = shoulderSpeed;
 }
 
-/////////////////// PUBLIC METHODS ///////////////////
+/////////////////// METHODS ///////////////////
 void Arm::moveInPlane(double distanceFromChassis, double heightAboveGround) {
     double hypotenuse = getHypotenuse(heightAboveGround, distanceFromChassis);
     double phi = getPhi(hypotenuse);
@@ -23,7 +23,7 @@ void Arm::moveInPlane(double distanceFromChassis, double heightAboveGround) {
     double alpha = getAlpha(heightAboveGround, distanceFromChassis);
     double shoulderJointAngle = alpha + theta;
     moveShoulderJoint(shoulderJointAngle);
-    elbow->write(180 - phi);
+    elbow->slowWrite(180-phi,8);
 }
 
 bool Arm::grabTreasure() {
@@ -36,8 +36,9 @@ void Arm::moveShoulderJoint(int angle) {
 
     while (abs(potValue - inputValue) > POT_MOTOR_ERROR) { 
         if (potValue < inputValue) {
-            shoulder->setSpeed(shoulderSpeed - SHOULDER_SPEED_OFFSET);
-            while (potValue < inputValue) {
+            shoulder->setSpeed(shoulderSpeed);
+            while (potValue < inputValue)
+            {
                 potValue = analogRead(SHOULDER_POT);
             }
         }
@@ -73,13 +74,13 @@ void Arm::rotateBase(int angle){
     base->write(BASE_SERVO_STOP_ANGLE);
 }
 
-// void Arm::sweep(double startingDist, double endingDist, double height){
-//     for(double i=startingDist;i<endingDist;i+SWEEP_STEP_SIZE){
-//         moveInPlane(i,height);
-//     }
-// }
+void Arm::sweep(double startingDist, double endingDist, double height){
+    for(double i=startingDist;i<endingDist;i+=SWEEP_STEP_SIZE){
+        moveInPlane(i,height);
 
-/////////////////// PRIVATE METHODS ///////////////////
+    }
+}
+
 double Arm::getHypotenuse(double heightAboveGround, double distanceFromChassis) {
     double y = heightAboveGround - SHOULDER_HEIGHT;
     double x = distanceFromChassis + SHOULDER_CHASSIS_EDGE_DIST; 

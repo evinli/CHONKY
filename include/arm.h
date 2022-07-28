@@ -48,7 +48,9 @@ class Arm {
      * @param angle
      */
     void rotateBase(int angle);
-    
+
+    void sweep(double startingDist, double endingDist, double height);      
+
   private:
     Motor* shoulder;
     Servo* elbow;
@@ -64,6 +66,9 @@ class Arm {
     double getTheta(double hypotenuse, double phi);
 
     double getAlpha(double heightAboveGround, double distanceFromChassis);
+
+    void sweep(double startingDist, double endingDist, double height);      
+
 };
 
 #endif // __ARM_H__

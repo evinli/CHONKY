@@ -28,7 +28,7 @@ Servo baseServo (BASE_PLATE_SERVO);
 Motor shoulderMotor(PB_8, PB_9);
 NewPing horizontalSonar(LEFT_TREASURE_TRIG, LEFT_TREASURE_ECHO, 200); // NewPing setup of pins and maximum distance.
 NewPing verticalSonar(RIGHT_TREASURE_TRIG, RIGHT_TREASURE_ECHO, 200);
-Arm mainArm(&shoulderMotor,&elbowServo,&clawServo, &baseServo, 140);
+Arm mainArm(&shoulderMotor,&elbowServo,&clawServo, &baseServo, 150);
 
 int potValue;
 int loopCount=0;                      
@@ -41,10 +41,8 @@ int threshold=35;
 void setup() {
     display.setUp();
     display.clear();
-    pinMode(PA0,INPUT);
     display.write(0,"started");
     delay(1000);
-    Serial.begin(9600);
 }
 
 void loop(){
@@ -60,9 +58,21 @@ void loop(){
     //     elbowServo.slowWrite(45,i*10);
     //     delay(3000);
     // }
-    display.clear();
-    display.write(0,std::to_string(analogRead(PA0)));
-    mainArm.moveShoulderJoint(45);
+    
+    // display.clear();
+    // display.write(0,"done with alpha calc");
+    // double shoulderJointAngle=alpha+theta;
+    // display.clear();
+    // display.write(0,"done with shoulder joint calc");
+    // display.write(0,std::to_string(phi));
+    // display.clear();
+    // display.write(0,"wrote phi");
+    // display.write(0,std::to_string(shoulderJointAngle));
+    // delay(500);
+    // mainArm.moveInPlane(3,26);
+    // mainArm.moveInPlane(20,26);
+     mainArm.sweep(3,16,26);
+    // delay(2000);
 
     // loopCount++;
     // if (loopCount>30){
