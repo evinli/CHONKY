@@ -35,7 +35,7 @@ bool Arm::grabTreasure(){
 void Arm::moveShoulderJoint(int angle)
 {
     int potValue = analogRead(SHOULDER_POT);
-    int inputValue = (angle * (566-959) / 90) + 959; // This is the input angle in terms of the potentiometer values
+    int inputValue = (angle * (SHOULDER_NINETY-SHOULDER_ZERO) / SHOULDER_RANGE) + SHOULDER_ZERO; // This is the input angle in terms of the potentiometer values
 
     while (abs(potValue - inputValue) > 5) { 
         if (potValue < inputValue) {
@@ -86,7 +86,7 @@ double Arm::getAlpha(double heightAboveGround, double distanceFromChassis){
 
 void Arm::rotateBase(int angle){
     int potValue = analogRead(BASE_POT);
-    int targetValue = (angle * (-1023) /(350-16)) +1072;
+    int targetValue = (angle * (-1023) /(350-16)) +1072; //TO BE MADE TO CONSTANTS
 
     while (abs(potValue - targetValue) > 5) { 
         if (potValue < targetValue) {
@@ -106,3 +106,9 @@ void Arm::rotateBase(int angle){
     }
     base->write(83);
 }
+
+// void Arm::sweep(double startingDist, double endingDist, double height){
+//     for(double i=startingDist;i<endingDist;i+SWEEP_STEP_SIZE){
+//         moveInPlane(i,height);
+//     }
+// }

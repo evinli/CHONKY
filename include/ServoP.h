@@ -27,9 +27,12 @@ class ServoP{
      * @param angle 
      */
     void write(double angle);
-    double angle;
+
+    void slowWrite(int finalAngle, int delayLengthMilli);
 
     void resetServo();
+
+    double angle;
 
     private:
     PinName pwmPin;

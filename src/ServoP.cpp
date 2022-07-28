@@ -22,3 +22,18 @@ void ServoP::write(double angle){
      double value=(angle)*((double(SERVO_ONE_EIGHTY_VALUE-SERVO_ZERO_VALUE))/double(SERVO_RANGE))+SERVO_ZERO_VALUE;
      pwm_start(this->pwmPin,SERVO_FREQ,(int)(value),TimerCompareFormat_t::MICROSEC_COMPARE_FORMAT);
 }
+
+void ServoP::slowWrite(int finalAngle, int delayLengthMilli){
+    if(finalAngle>this->angle){
+        for (int i=this->angle;i<finalAngle;i++){
+        this->write(i);
+        delay(delayLengthMilli);
+        }
+    }
+    else{
+        for (int i=this->angle;i>finalAngle;i--){
+        this->write(i);
+        delay(delayLengthMilli);
+        }
+    }
+}
