@@ -10,6 +10,9 @@
 #include "Arduino.h"
 #include "motor.h"
 #include "servo.h"
+#include "OLED.h"
+#include <NewPing.h>
+
 
 class Arm {
   public:
@@ -22,7 +25,7 @@ class Arm {
      * @param base object for continuous base servo
      * @param shoulderSpeed speed of shoulder joint motor
      */
-    Arm(Motor* shoulder, Servo* elbow, Servo* claw, Servo* base, int shoulderSpeed);
+    Arm(Motor* shoulder, Servo* elbow, Servo* claw, Servo* base, int shoulderSpeed, NewPing* verticalSonar, NewPing* horizontalSonar, OLED* display);
 
     /**
      * @brief Move the arm to a specified distance away from the chassis at a 
@@ -31,9 +34,10 @@ class Arm {
      * @param distanceFromChassis 
      * @param heightAboveGround 
      */
-    void moveInPlane(double distanceFromChassis, double heightAboveGround);
+    void moveInPlaneShoulderFirst(double distanceFromChassis, double heightAboveGround);
+    void moveInPlaneElbowFirst(double distanceFromChassis, double heightAboveGround);
 
-    bool grabTreasure();
+    void grasp();
 
     /**
      * @brief Move the shoulder join to a given angle
@@ -49,15 +53,38 @@ class Arm {
      */
     void rotateBase(int angle);
 
-    void sweep(double startingDist, double endingDist, double height);      
+    void sweep(double startingDist, double endingDist, double height); 
+    
+    void sweepAndDetect(double startingDist, double endingDist, double height);
 
-  private:
+    void graspSequence(double startingDistFromChassis, double finalHeight);
+
+    void testShoulder();
+
+    void testElbow();
+
+    void testClaw();
+
+    void testBase();
+
+    void testArm();
+    
+    double avgSampleSonar(int numReadings, NewPing* sonarSensor);
+
+    void dropInBasket();
+
+
     Motor* shoulder;
     Servo* elbow;
     Servo* claw;
     Servo* base;
-    Motor* shoulder;
-    int shoulderSpeed;
+    NewPing* verticalSonar;
+    NewPing* horizontalSonar;
+    OLED* display;
+    int shoulderSpeed;     
+
+  private:
+    
         
     double getHypotenuse(double heightAboveGround, double distanceFromChassis);
 
@@ -66,8 +93,6 @@ class Arm {
     double getTheta(double hypotenuse, double phi);
 
     double getAlpha(double heightAboveGround, double distanceFromChassis);
-
-    void sweep(double startingDist, double endingDist, double height);      
 
 };
 
