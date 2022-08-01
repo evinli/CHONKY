@@ -40,22 +40,35 @@
 #define IR_THREE_OFF 6
 
 // SERVO TUNING
-#define SERVO_ZERO_VALUE 540
+#define SERVO_ZERO_VALUE 544
 #define SERVO_ONE_EIGHTY_VALUE 2400
 #define SERVO_RANGE 180
-#define BASE_SERVO_STOP_ANGLE 83
+#define BASE_SERVO_STOP_ANGLE 84
 
+<<<<<<< HEAD
 // ARM
 const double FOREARM_LENGTH = 17;
 const double SHOULDER_HEIGHT = 6;
 const double BICEP_LENGTH = 17;
 const double SHOULDER_CHASSIS_EDGE_DIST = 11;
 const double SWEEP_STEP_SIZE = 0.3;
+=======
+//ARM
+const double FOREARM_LENGTH=17;
+const double SHOULDER_HEIGHT=25;
+const double BICEP_LENGTH=17;
+const double SHOULDER_CHASSIS_EDGE_DIST=11;
+const double SWEEP_STEP_SIZE=0.3;
+#define SHOULDER_MAX_ANGLE 90
+#define SHOULDER_MIN_ANLGE 0
+>>>>>>> Arm
 
 // POT TUNING
 #define SHOULDER_NINETY 895
-#define SHOULDER_ZERO 530
-#define SHOULDER_RANGE 90
+#define SHOULDER_ZERO 516
+#define SHOULDER_RANGE SHOULDER_MAX_ANGLE-SHOULDER_MIN_ANLGE
+#define BASE_NINETY 255
+#define BASE_ONE_EIGHTY 528
  // put base pot values here too
 
 // MOTOR 
@@ -63,7 +76,10 @@ const double SWEEP_STEP_SIZE = 0.3;
 #define SHOULDER_SPEED_OFFSET 20 
  
 
+//TREASURE DETECTION
+#define SWEEP_SAMPLE_COUNT 40
 
-
-
+//CLAW
+#define CLAW_GRASP_ANGLE 130
+#define CLAW_OPEN_ANGLE 45
 
