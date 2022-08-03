@@ -58,7 +58,7 @@ void PID::setKI(float KI) {
      this->KI = KI;
 }
 
-int PID::usePID() {
+int PID::usePID(int idolCount) {
     int error;
     int leftReading;
     int centreReading;
@@ -66,30 +66,42 @@ int PID::usePID() {
 
     switch (pidType) {         
         case PIDType::TapeFollower: {
-            // get reflectance sensor readings
+            // Get reflectance sensor readings
             leftReading = getAvgAnalogValue(LEFT_TAPE_SENSOR, TAPE_NUM_READINGS);
             centreReading = getAvgAnalogValue(CENTER_TAPE_SENSOR, TAPE_NUM_READINGS);
             rightReading = getAvgAnalogValue(RIGHT_TAPE_SENSOR, TAPE_NUM_READINGS);
 
-            // display readings
+            // Display readings
             display->clear();
             display->write(0, "Left Reading:" + std::to_string(leftReading));
             display->write(10, "Centre Reading:" + std::to_string(centreReading));
             display->write(20, "Right Reading:" + std::to_string(rightReading));
 
+            // Get tape error
             bool leftOnWhite = sensorOnWhite(leftReading, TAPE_WHITE_THRESHOLD);
             bool centreOnWhite = sensorOnWhite(centreReading, TAPE_WHITE_THRESHOLD);
             bool rightOnWhite = sensorOnWhite(rightReading, TAPE_WHITE_THRESHOLD);
             error = getTapeError(leftOnWhite, centreOnWhite, rightOnWhite);
+
+            // Display tape error 
             display->write(30, "Error:" + std::to_string(error));
-            if (error == T_STOP) {
+
+            // Set motors to go straight at chicken wire 
+            if (error == ALL_HIGH && idolCount < 2) {
+                error = TAPE_ON;
+            }
+
+            // Stop motors if at t-stop
+            if (error == ALL_HIGH && idolCount == 2) {
+                leftMotor->setSpeed(0);
+                rightMotor->setSpeed(0);
                 return error;
             }
             break;
         }
         
         case PIDType::IRFollower: {
-            // get IR sensor readings
+            // Get IR sensor readings
             digitalWrite(IR_MOSFET, HIGH);
             delayMicroseconds(300);
             digitalWrite(IR_MOSFET, LOW);
@@ -108,29 +120,31 @@ int PID::usePID() {
             delayMicroseconds(25);
             rightReading = analogRead(IR_RIGHT_DETECT);
 
-            // display readings
+            // Display readings
             display->clear();
             display->write(0, "Left Reading:" + std::to_string(leftReading));
             display->write(10, "Centre Reading:" + std::to_string(centreReading));
             display->write(20, "Right Reading:" + std::to_string(rightReading));
             
-            // determine sensor state
+            // Determine sensor state
             bool leftOnIR = sensorOnIR(leftReading, IR_THRESHOLD);
             bool centreOnIR = sensorOnIR(centreReading, IR_THRESHOLD);
             bool rightOnIR = sensorOnIR(rightReading, IR_THRESHOLD);
 
-            // get error
+            // Get IR error
             error = getIRError(leftOnIR, centreOnIR, rightOnIR);
 
-            // display error
+            // Display error
             display->write(30, "Error:" + std::to_string(error));
             break;
         }
-        // case PIDType::EdgeFollower:
-        //     break;
+
+        case PIDType::EdgeFollower:
+            break;
         
-        // default:
-        //     hello
+        default: {
+            break;
+        }
     }
 
     P = error;
@@ -144,7 +158,7 @@ int PID::usePID() {
     int leftMotorSpeed = motorSpeed - modMotorSpeed; 
     int rightMotorSpeed = motorSpeed + modMotorSpeed; 
 
-    // set new motor speeds
+    // Set new motor speeds
     leftMotor->setSpeed(leftMotorSpeed);
     rightMotor->setSpeed(rightMotorSpeed);
     return error;
@@ -173,8 +187,9 @@ int PID::getTapeError(bool leftOnWhite, bool centreOnWhite, bool rightOnWhite) {
     // WHITE, BLACK, BLACK:                error = -one off
     // WHITE, WHITE, BLACK:                error = -two off
     // WHITE, WHITE, WHITE, lastError < 0: error = -three off
+    // BLACK, BLACK, BLACK:                error = all high
 
-    int error;
+    int error = TAPE_ON;
     if (leftOnWhite && centreOnWhite && rightOnWhite) {
         if (lastError > 0) {
             error = TAPE_THREE_OFF; // lost tape completely
@@ -188,7 +203,7 @@ int PID::getTapeError(bool leftOnWhite, bool centreOnWhite, bool rightOnWhite) {
     else if (!leftOnWhite && !centreOnWhite && rightOnWhite) error = TAPE_ONE_OFF;
     else if (leftOnWhite && !centreOnWhite && !rightOnWhite) error = -TAPE_ONE_OFF;
     else if (leftOnWhite && !centreOnWhite && rightOnWhite) error = TAPE_ON;
-    // else if (!leftOnWhite && !centreOnWhite && !rightOnWhite) error = T_STOP;
+    else if (!leftOnWhite && !centreOnWhite && !rightOnWhite) error = ALL_HIGH;
     else error = TAPE_ON;
 
     return error;
@@ -213,21 +228,12 @@ int PID::getIRError(bool leftOnIR, bool centreOnIR, bool rightOnIR) {
             error = -IR_THREE_OFF;
         }
     }
-    else if (leftOnIR && !centreOnIR && !rightOnIR) {
-        error = IR_TWO_OFF;
-    }
-    else if (leftOnIR && centreOnIR && !rightOnIR) {
-        error = IR_ONE_OFF;
-    }
-    else if (!leftOnIR && centreOnIR && !rightOnIR) {
-        error = ON_TEN_K;
-    }
-    else if (!leftOnIR && centreOnIR && rightOnIR) {
-        error = -IR_ONE_OFF;
-    }
-    else if (!leftOnIR && !centreOnIR && rightOnIR) {
-        error = -IR_TWO_OFF;
-    }
+    else if (leftOnIR && !centreOnIR && !rightOnIR) error = IR_TWO_OFF;
+    else if (leftOnIR && centreOnIR && !rightOnIR) error = IR_ONE_OFF;
+    else if (!leftOnIR && centreOnIR && !rightOnIR) error = ON_TEN_K;
+    else if (!leftOnIR && centreOnIR && rightOnIR) error = -IR_ONE_OFF;
+    else if (!leftOnIR && !centreOnIR && rightOnIR) error = -IR_TWO_OFF;
+    else error = ON_TEN_K;
 
     return error;
 }

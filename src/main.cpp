@@ -7,11 +7,11 @@
 
 #include "Arduino.h"
 #include <string.h>
-#include <NewPing.h>
 #include "PID.h"
 #include "motor.h"
 #include "pins.h"
 #include "OLED.h"
+#include "slave.h"
 
 // Class instantiations
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -21,67 +21,83 @@ Motor leftMotor(LEFT_MOTOR_A, LEFT_MOTOR_B);
 PID tapeFollow(TapeFollower, &leftMotor, &rightMotor, &display);
 PID irFollow(IRFollower, &leftMotor, &rightMotor, &display);
 
-int state;
+// Variable declarations
+int state, idolCount;
+bool slaveEnabled;
+long lastAdvanceTime;
 
 void setup() {
     display.setUp();
-    state = 1;
+    state = SlaveState::Inactive;
+    idolCount = 0;
+    slaveEnabled = true;
+    lastAdvanceTime = millis();
+    pinMode(SLAVE_ADVANCE_STATE, INPUT_PULLDOWN);
+    pinMode(SLAVE_STOP_DRIVE, INPUT_PULLDOWN);
+    attachInterrupt(digitalPinToInterrupt(SLAVE_STOP_DRIVE), slaveStopDrive, RISING);
 }
 
 void loop() {
-    switch(state) {
-        case(0): {
-            tapeFollow.setMotorSpeed(85);
-            tapeFollow.setKP(11);
-            tapeFollow.setKD(5);
-            tapeFollow.setKI(0);
-            tapeFollow.usePID();
+    // Reset slave enabled flag
+    slaveEnabled = true;
 
-            // get IR sensor readings
-            // digitalWrite(IR_MOSFET, HIGH);
-            // delayMicroseconds(300);
-            // digitalWrite(IR_MOSFET, LOW);
-            // delayMicroseconds(25);
-            // int leftReading = analogRead(IR_LEFT_DETECT);
-            
-            // digitalWrite(IR_MOSFET, HIGH);
-            // delayMicroseconds(300);
-            // digitalWrite(IR_MOSFET, LOW);
-            // delayMicroseconds(25);
-            // int centreReading = analogRead(IR_CENTRE_DETECT);
-
-            // digitalWrite(IR_MOSFET, HIGH);
-            // delayMicroseconds(300);
-            // digitalWrite(IR_MOSFET, LOW);
-            // delayMicroseconds(25);
-            // int rightReading = analogRead(IR_RIGHT_DETECT);
-
-            // display.write(40, std::to_string(leftReading));
-            // display.write(50, std::to_string(centreReading));
-            // display.write(60, std::to_string(rightReading));
-
-            // if (centreReading > IR_THRESHOLD) {
-            //     state = 1;
-            //     display.clear();
-            //     display.write(0, "at archway");
-            // }
-        
-            // if (tapeFollow.usePID() == T_STOP) {
-            //     if (tapeFollow.usePID() == T_STOP) {
-            //         leftMotor.stop();
-            //         rightMotor.stop();
-            //         state = 1;
-            //     }
-            // }
-            break;
-        }
-        case(1): {
-            irFollow.setMotorSpeed(100);
-            irFollow.setKP(11);
-            irFollow.setKD(0);
-            irFollow.setKI(0);
-            irFollow.usePID();
-            break;
-        }
+    // Check comms pins 
+    if (digitalRead(SLAVE_ADVANCE_STATE) == HIGH) {
+        advanceState();
     }
+    if (digitalRead(SLAVE_STOP_DRIVE) == HIGH) {
+        leftMotor.stop();
+        rightMotor.stop();
+        slaveEnabled = false;
+    }
+    
+    // Run state machine
+    if (slaveEnabled) {
+        switch(state) {
+            case(SlaveState::Inactive): {
+                display.clear();
+                display.write(0, "Inactive State");
+                break;
+            }
+
+            case(SlaveState::TapeFollowing): {
+                tapeFollow.setMotorSpeed(85);
+                tapeFollow.setKP(12);
+                tapeFollow.setKD(5);
+                tapeFollow.setKI(0);
+                int tapeState = tapeFollow.usePID(idolCount);
+                if (tapeState == ALL_HIGH) {
+                    advanceState();
+                }
+                break;
+            }
+
+            case(SlaveState::IRFollowing): {
+                irFollow.setMotorSpeed(100);
+                irFollow.setKP(11);
+                irFollow.setKD(0);
+                irFollow.setKI(0);
+                irFollow.usePID(idolCount);
+                break;
+            }
+        }
+    }  
+}
+
+void slaveStopDrive() {
+    idolCount++;
+}
+
+bool advanceState() {
+    // Ensure doesn't advance state twice
+    if (millis() - lastAdvanceTime < MIN_ADVANCE_TIME) { 
+        return false; 
+    }
+    lastAdvanceTime = millis();
+    if (state == SlaveState::Done) {
+         return false; 
+    }
+
+    state = static_cast<SlaveState>(static_cast<int>(state) + 1);
+    return true;
 }
