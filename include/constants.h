@@ -29,7 +29,7 @@
 #define TAPE_ONE_OFF 1
 #define TAPE_TWO_OFF 3
 #define TAPE_THREE_OFF 6
-#define T_STOP -1
+#define ALL_HIGH -1
 
 // IR FOLLOWING
 #define IR_THRESHOLD 190
@@ -65,6 +65,9 @@ const double SWEEP_STEP_SIZE=0.3;
 // MOTOR 
 #define POT_MOTOR_ERROR 5
 #define SHOULDER_SPEED_OFFSET 20 
+
+// STATE MACHINE
+#define MIN_ADVANCE_TIME 500
  
 
 //TREASURE DETECTION

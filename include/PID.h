@@ -63,7 +63,7 @@ class PID {
      * 
      * @return current PID error
      */
-    int usePID();
+    int usePID(int idolCount);
 
   private:
     float KP, KD, KI;
