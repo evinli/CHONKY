@@ -91,11 +91,6 @@ void Arm::rotateBase(int angle) {
     base->write(BASE_SERVO_STOP_ANGLE);
 }
 
-<<<<<<< HEAD
-void Arm::sweep(double startingDist, double endingDist, double height) {
-    for(double i=startingDist;i<endingDist;i+=SWEEP_STEP_SIZE){
-        moveInPlane(i,height);
-=======
 void Arm::dropInBasket() {
     moveShoulderJoint(90);
     this->elbow->write(30);
@@ -104,7 +99,6 @@ void Arm::dropInBasket() {
     this->claw->write(30);
     delay(3000);
 }
->>>>>>> Arm
 
 void Arm::sweep(double startingDist, double endingDist, double height) {
     for (double i = startingDist; i < endingDist; i += SWEEP_STEP_SIZE) {

@@ -78,9 +78,6 @@ class Arm {
     Servo* elbow;
     Servo* claw;
     Servo* base;
-<<<<<<< HEAD
-    int shoulderSpeed;
-=======
     NewPing* verticalSonar;
     NewPing* horizontalSonar;
     OLED* display;
@@ -88,7 +85,6 @@ class Arm {
 
   private:
     
->>>>>>> Arm
         
     double getHypotenuse(double heightAboveGround, double distanceFromChassis);
 

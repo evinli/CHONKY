@@ -45,14 +45,6 @@
 #define SERVO_RANGE 180
 #define BASE_SERVO_STOP_ANGLE 84
 
-<<<<<<< HEAD
-// ARM
-const double FOREARM_LENGTH = 17;
-const double SHOULDER_HEIGHT = 6;
-const double BICEP_LENGTH = 17;
-const double SHOULDER_CHASSIS_EDGE_DIST = 11;
-const double SWEEP_STEP_SIZE = 0.3;
-=======
 //ARM
 const double FOREARM_LENGTH=17;
 const double SHOULDER_HEIGHT=25;
@@ -61,7 +53,6 @@ const double SHOULDER_CHASSIS_EDGE_DIST=11;
 const double SWEEP_STEP_SIZE=0.3;
 #define SHOULDER_MAX_ANGLE 90
 #define SHOULDER_MIN_ANLGE 0
->>>>>>> Arm
 
 // POT TUNING
 #define SHOULDER_NINETY 895
