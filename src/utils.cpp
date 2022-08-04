@@ -13,13 +13,3 @@ int getAvgAnalogValue(int analogPin, int numReadings) {
     }
     return (int)(avgValue / numReadings);
 }
-
-// void syncTimer() {
-//     for (int i = 1; i <= NUM_TIMERS; i++) {
-//       HardwareTimer timer(i);
-//       timer.pause();
-//       timer.setPeriod(TIMER_PERIOD);
-//       timer.refresh();
-//       timer.resume();
-//   }
-// }

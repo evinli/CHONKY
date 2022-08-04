@@ -6,10 +6,10 @@
 
 #include "master.h"
 
-/////////////////// CONSTRUCTORS ///////////////////
-Master::Master(NewPing* leftUltrasonic, NewPing* rightUltrasonic, Arm* arm) {
+// /////////////////// CONSTRUCTORS ///////////////////
+// Master::Master(NewPing* leftUltrasonic, NewPing* rightUltrasonic, Arm* arm) {
     
-}
+// }
 
 /////////////////// METHODS ///////////////////
 // void Master::determineState() {

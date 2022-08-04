@@ -19,9 +19,3 @@
  */
 int getAvgAnalogValue(int analogPin, int numReadings);
 
-/**
- * @brief Sets all the timers to 20ms period; ensures 
- *        consistency between servos and motors on the same timer
- */
-void syncTimers();
-

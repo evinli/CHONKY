@@ -16,6 +16,8 @@ Arm::Arm(Motor* shoulder, Servo* elbow, Servo* claw, Servo* base, int shoulderSp
     this->verticalSonar = verticalSonar;
     this->horizontalSonar = horizontalSonar;
     this->display = display;
+    pinMode(SHOULDER_POT, INPUT);
+    pinMode(BASE_POT, INPUT);
 }
 
 /////////////////// METHODS ///////////////////
@@ -170,7 +172,7 @@ double Arm::avgSampleSonar(int numReadings, NewPing* sonarSensor) {
         sum += sonarSensor->ping_cm();
     }
 
-    return ((double)sum / (double)numReadings);
+    return (double)(sum)/numReadings;
 }
 
 void Arm::testShoulder() {
