@@ -65,9 +65,9 @@ void loop() {
             }
 
             case(SlaveState::TapeFollowing): {
-                tapeFollow.setMotorSpeed(85);
-                tapeFollow.setKP(12);
-                tapeFollow.setKD(5);
+                tapeFollow.setMotorSpeed(90);
+                tapeFollow.setKP(8);
+                tapeFollow.setKD(4);
                 tapeFollow.setKI(0);
                 int tapeState = tapeFollow.usePID(idolCount);
                 if (tapeState == ALL_HIGH) {
