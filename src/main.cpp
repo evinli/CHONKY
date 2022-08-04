@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /**
  * @file      main.cpp
  * @author    Creators of CHONKY
@@ -28,8 +26,8 @@ OLED display(&display_handler);
 Servo elbowServo(ELBOW_SERVO);
 Servo baseServo(PA_8);
 Motor shoulderMotor(PB_8, PB_9);
-NewPing horizontalSonar(RIGHT_TREASURE_TRIG, RIGHT_TREASURE_ECHO, 200);  // NewPing setup of pins and maximum distance.
-NewPing verticalSonar(LEFT_TREASURE_TRIG, LEFT_TREASURE_ECHO, 200);
+NewPing horizontalSonar(TREASURE_TRIG, TREASURE_ECHO, 200);  // NewPing setup of pins and maximum distance.
+NewPing verticalSonar(CLAW_SCAN_TRIG, CLAW_SCAN_ECHO, 200);
 Arm mainArm(&shoulderMotor, &elbowServo, &clawServo, &baseServo, 150, &verticalSonar, &horizontalSonar, &display);
 
 int potValue;
@@ -230,4 +228,3 @@ void loop() {
     //     display.write(0,std::to_string(loopCount));
     // }
 }
->>>>>>> Arm
