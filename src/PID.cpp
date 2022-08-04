@@ -93,8 +93,8 @@ int PID::usePID(int idolCount) {
 
             // Stop motors if at t-stop
             if (error == ALL_HIGH && idolCount == 2) {
-                leftMotor->setSpeed(0);
-                rightMotor->setSpeed(0);
+                leftMotor->stop();
+                rightMotor->stop();
                 return error;
             }
             break;
