@@ -42,13 +42,14 @@ void Arm::moveInPlaneElbowFirst(double distanceFromChassis, double heightAboveGr
 }
 
 void Arm::grasp() {
-    this->claw->write(CLAW_GRASP_ANGLE);
+    claw->write(CLAW_GRASP_ANGLE);
 }
 
 void Arm::moveShoulderJoint(int angle) {
-    if(angle>90||angle<0){
+    if (angle > 90 || angle < 0){
         return;
     }
+
     int potValue = analogRead(SHOULDER_POT);
     int inputValue = angle * (SHOULDER_NINETY - SHOULDER_ZERO) / (SHOULDER_RANGE) + SHOULDER_ZERO;  // input angle in terms of the potentiometer values
 
@@ -93,31 +94,29 @@ void Arm::rotateBase(int angle) {
     base->write(BASE_SERVO_STOP_ANGLE);
 }
 
-void Arm::dropInBasket() {
-    moveShoulderJoint(90);
-    this->elbow->write(30);
-    rotateBase(180);
+void Arm::dropInBasket(int dropOffSide) {
+    moveShoulderJoint(90); // trial and error
+    elbow->write(30); // trial and error
+    rotateBase(dropOffSide);
     delay(500);
-    this->claw->write(30);
-    delay(3000);
+    claw->write(CLAW_OPEN_ANGLE);
+    delay(1500);
 }
 
 void Arm::sweep(double startingDist, double endingDist, double height) {
     for (double i = startingDist; i < endingDist; i += SWEEP_STEP_SIZE) {
         moveInPlaneShoulderFirst(i, height);
-        delay(8);
     }
 }
 
-void Arm::sweepAndDetect(double startingDist, double endingDist, double height) {
-    this->claw->write(50);
+void Arm::sweepAndDetect(double startingDist, double endingDist, double height, int dropOffSide) {
     for (double i = startingDist; i < endingDist; i += SWEEP_STEP_SIZE) {
         moveInPlaneShoulderFirst(i, height);
-        if (avgSampleSonar(SWEEP_SAMPLE_COUNT, this->verticalSonar) < 10) {
+        if (avgSampleSonar(CLAW_SCAN_SAMPLES, this->verticalSonar) < 10) {
             this->display->clear();
-            this->display->write(0, "treasure detected");
+            this->display->write(0, "Claw Scan Triggered");
             graspSequence(i, height);
-            dropInBasket();
+            dropInBasket(dropOffSide);
             break;
         }
     }
@@ -126,18 +125,19 @@ void Arm::sweepAndDetect(double startingDist, double endingDist, double height) 
 void Arm::graspSequence(double startingDist, double currentHeight) {
     // map distance away to additional distance required to travel (i.e. closer needs less distance)
     // TO CHANGE, THIS IS CURRENLY CONSTANT:
-    double finalDist = startingDist + 6;
-    sweep(startingDist, finalDist, currentHeight + 1);
-    display->clear();
-    display->write(0, "done final sweep");
-    moveInPlaneShoulderFirst(finalDist, currentHeight - 3);
-    display->clear();
-    display->write(0, "moved down");
-    delay(1000);
-    grasp();
-    display->clear();
-    display->write(0, "done grasping");
-    delay(1000);
+    double finalDist = startingDist + 6; // trial and error
+    sweep(startingDist, finalDist, currentHeight + 1); // +1 because our height seems to drop as a sweep
+    moveInPlaneShoulderFirst(finalDist, currentHeight - 3); // trial and error
+    delay(1000); // make sure we're fully downright before we grasp
+    grasp(); 
+    delay(1000); // make sure we have idol in our grasp
+}
+
+void Arm::goToRestingPos() {
+    // need to verify these values
+    // rotateBase(MIDDLE_ANGLE);
+    // elbow->slowWrite(0, 8);
+    // moveShoulderJoint(0);
 }
 
 double Arm::getHypotenuse(double heightAboveGround, double distanceFromChassis) {
@@ -175,6 +175,7 @@ double Arm::avgSampleSonar(int numReadings, NewPing* sonarSensor) {
     return (double)(sum)/numReadings;
 }
 
+// TESTING STUFF
 void Arm::testShoulder() {
     for (int i = 0; i < 7; i++) {
         moveShoulderJoint(i * 15);

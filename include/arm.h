@@ -55,7 +55,7 @@ class Arm {
 
     void sweep(double startingDist, double endingDist, double height); 
     
-    void sweepAndDetect(double startingDist, double endingDist, double height);
+    void sweepAndDetect(double startingDist, double endingDist, double height, int dropOffSide);
 
     void graspSequence(double startingDistFromChassis, double finalHeight);
 
@@ -71,9 +71,11 @@ class Arm {
     
     double avgSampleSonar(int numReadings, NewPing* sonarSensor);
 
-    void dropInBasket();
+    void dropInBasket(int dropOffSide);  
 
+    void goToRestingPos(); 
 
+  private:
     Motor* shoulder;
     Servo* elbow;
     Servo* claw;
@@ -81,10 +83,7 @@ class Arm {
     NewPing* verticalSonar;
     NewPing* horizontalSonar;
     OLED* display;
-    int shoulderSpeed;     
-
-  private:
-    
+    int shoulderSpeed;    
         
     double getHypotenuse(double heightAboveGround, double distanceFromChassis);
 

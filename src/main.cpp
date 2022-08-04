@@ -32,7 +32,7 @@ MasterState state;
 int idolCount;
 
 // Function prototypes
-double getAvgUltrasonic(int numReadings);
+double idolDetect(int numReadings);
 bool advanceState();
 void signalSlaveAdvance();
 void endSlaveAdvanceSignal();
@@ -48,22 +48,54 @@ void setup() {
 }
 
 void loop() {
+    display.clear();
     endSlaveAdvanceSignal();
 
     switch(state) {
         case(MasterState::Inactive): {
-            arm.rotateBase(BASE_RIGHT_SIDE);
-            arm.moveInPlaneElbowFirst(15, 25); // trial and error 
+            arm.rotateBase(RIGHT_SIDE_ANGLE);
+            arm.moveInPlaneElbowFirst(15, 25); // trial and error, where to move arm so that it can detect idol 1
             advanceState();
             signalSlaveAdvance();
         }
 
         case(MasterState::FirstIdol): {
-             
+            if (idolDetect(IDOL_DETECT_SAMPLES) < 30) { // trial and error, how close is idol 1 to arm?
+                display.clear();
+                display.write(0, "Idol 1 Detected");
+                stopSlave();
+                if (idolDetect(IDOL_DETECT_SAMPLES) < 30) { // trial and error, how close is idol 1 to arm?
+                    display.clear();
+                    display.write(0, "Idol 1 Detected & Verified");
+                    // Treasure pickup sequence
+                    arm.sweepAndDetect(15, 30, 45, RIGHT_DROPOFF_ANGLE); // trial and error, where should arm go to pick up idol 1
+
+                    // Reset arm 
+                    arm.rotateBase(RIGHT_SIDE_ANGLE);
+                    arm.moveInPlaneElbowFirst(15, 25); // trial and error, where to move arm to detect idol 2
+                    advanceState();
+                    goSlave();
+                }
+            }
         }
 
         case(MasterState::SecondIdol): {
-            
+            if (idolDetect(IDOL_DETECT_SAMPLES) < 20) { // trial and error
+                display.clear();
+                display.write(0, "Idol 2 Detected");
+                stopSlave();
+                if (idolDetect(IDOL_DETECT_SAMPLES) < 20) { // trial and error
+                    display.clear();
+                    display.write(0, "Idol 2 Detected & Verified");
+                    // Treasure pickup sequence
+                    arm.sweepAndDetect(15, 20, 45, RIGHT_DROPOFF_ANGLE); // trial and error, where should arm go to pick up idol 2
+
+                    // Move arm into resting position 
+                    arm.goToRestingPos();
+                    advanceState();
+                    goSlave();
+                }
+            }
         }
     }
     // // WORKING TREASURE GRASPING CODE
@@ -91,7 +123,7 @@ void loop() {
 
 }
 
-double ultrasonicAvg(int numReadings) {
+double idolDetect(int numReadings) {
     int sum = 0;
     int reading;
 
