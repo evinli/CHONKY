@@ -31,7 +31,7 @@ bool advanceState();
 void stopSlaveISR();
 
 void setup() {
-    // display.setUp();
+    display.setUp();
     state = SlaveState::TapeFollowing;
     idolCount = 0;
     slaveEnabled = true;
