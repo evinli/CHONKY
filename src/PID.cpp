@@ -91,12 +91,13 @@ int PID::usePID(int idolCount) {
                 error = TAPE_ON;
             }
 
-            // Stop motors if at t-stop
-            if (error == ALL_HIGH && idolCount == 2) {
-                leftMotor->stop();
-                rightMotor->stop();
-                return error;
-            }
+            // // Stop motors if at t-stop
+            // if (error == ALL_HIGH && idolCount == 2) {
+            //     leftMotor->stop();
+            //     rightMotor->stop();
+            //     return error;
+            // }
+
             break;
         }
         
@@ -191,6 +192,9 @@ int PID::getTapeError(bool leftOnWhite, bool centreOnWhite, bool rightOnWhite) {
 
     int error = TAPE_ON;
     if (leftOnWhite && centreOnWhite && rightOnWhite) {
+        // if (lastError == ALL_HIGH) {
+
+        // }
         if (lastError > 0) {
             error = TAPE_THREE_OFF; // lost tape completely
         }

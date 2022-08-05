@@ -28,8 +28,8 @@
 #define TAPE_ON 0
 #define TAPE_ONE_OFF 1
 #define TAPE_TWO_OFF 3
-#define TAPE_THREE_OFF 6
-#define ALL_HIGH -1
+#define TAPE_THREE_OFF 5
+#define ALL_HIGH 50
 
 // IR FOLLOWING
 #define IR_THRESHOLD 190
