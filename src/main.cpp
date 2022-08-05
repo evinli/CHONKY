@@ -55,6 +55,7 @@ void loop() {
         case(MasterState::Inactive): {
             arm.rotateBase(RIGHT_SIDE_ANGLE);
             arm.moveInPlaneElbowFirst(15, 25); // trial and error, where to move arm so that it can detect idol 1
+            clawServo.write(CLAW_OPEN_ANGLE);
             advanceState();
             signalSlaveAdvance();
         }
@@ -68,7 +69,7 @@ void loop() {
                     display.clear();
                     display.write(0, "Idol 1 Detected & Verified");
                     // Treasure pickup sequence
-                    arm.sweepAndDetect(15, 30, 45, RIGHT_DROPOFF_ANGLE); // trial and error, where should arm go to pick up idol 1
+                    arm.sweepAndDetect(15, 30, 45, LEFT_DROPOFF_ANGLE); // trial and error, where should arm go to pick up idol 1
 
                     // Reset arm 
                     arm.rotateBase(RIGHT_SIDE_ANGLE);
@@ -88,7 +89,7 @@ void loop() {
                     display.clear();
                     display.write(0, "Idol 2 Detected & Verified");
                     // Treasure pickup sequence
-                    arm.sweepAndDetect(15, 20, 45, RIGHT_DROPOFF_ANGLE); // trial and error, where should arm go to pick up idol 2
+                    arm.sweepAndDetect(15, 20, 45, LEFT_DROPOFF_ANGLE); // trial and error, where should arm go to pick up idol 2
 
                     // Move arm into resting position 
                     arm.goToRestingPos();

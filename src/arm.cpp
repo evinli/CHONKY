@@ -91,7 +91,8 @@ void Arm::rotateBase(int angle) {
         }
     }
 
-    base->write(BASE_SERVO_STOP_ANGLE);
+    // base->write(BASE_SERVO_STOP_ANGLE);
+    pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
 }
 
 void Arm::dropInBasket(int dropOffSide) {
