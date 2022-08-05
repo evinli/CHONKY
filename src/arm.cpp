@@ -46,7 +46,7 @@ void Arm::grasp() {
 }
 
 void Arm::moveShoulderJoint(int angle) {
-    if (angle > 90 || angle < 0){
+    if (angle < 0){
         return;
     }
 
@@ -73,10 +73,6 @@ void Arm::rotateBase(int angle) {
     int potValue = analogRead(BASE_POT);
     int targetValue = angle * (526 - 250) / (180 - 90) - 26;  // TO BE MADE TO CONSTANTS
 
-    display->clear();
-    display->write(0, std::to_string(targetValue));
-    display->write(20, std::to_string(angle));
-
     while (abs(potValue - targetValue) > POT_MOTOR_ERROR) {
         if (potValue < targetValue) {
             base->write(90);  // change into constants
@@ -96,7 +92,7 @@ void Arm::rotateBase(int angle) {
 }
 
 void Arm::dropInBasket(int dropOffSide) {
-    moveShoulderJoint(90); // trial and error
+    moveShoulderJoint(100); // trial and error
     elbow->write(30); // trial and error
     rotateBase(dropOffSide);
     delay(500);
@@ -126,9 +122,9 @@ void Arm::sweepAndDetect(double startingDist, double endingDist, double height, 
 void Arm::graspSequence(double startingDist, double currentHeight) {
     // map distance away to additional distance required to travel (i.e. closer needs less distance)
     // TO CHANGE, THIS IS CURRENLY CONSTANT:
-    double finalDist = startingDist + 6; // trial and error
+    double finalDist = startingDist + 4; // trial and error
     sweep(startingDist, finalDist, currentHeight + 1); // +1 because our height seems to drop as a sweep
-    moveInPlaneShoulderFirst(finalDist, currentHeight - 3); // trial and error
+    moveInPlaneShoulderFirst(finalDist, currentHeight); // trial and error
     delay(1000); // make sure we're fully downright before we grasp
     grasp(); 
     delay(1000); // make sure we have idol in our grasp

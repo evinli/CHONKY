@@ -74,10 +74,11 @@ class Arm {
     void dropInBasket(int dropOffSide);  
 
     void goToRestingPos(); 
+    Servo* elbow;
 
   private:
     Motor* shoulder;
-    Servo* elbow;
+
     Servo* claw;
     Servo* base;
     NewPing* verticalSonar;

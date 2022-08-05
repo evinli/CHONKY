@@ -20,10 +20,10 @@
 
 /////////////////// MASTER BLUEPILL ///////////////////
 // ULTRSONIC
-#define TREASURE_TRIG PB14
-#define TREASURE_ECHO PB15
-#define CLAW_SCAN_TRIG PB11
-#define CLAW_SCAN_ECHO PB10
+#define TREASURE_TRIG PB15
+#define TREASURE_ECHO PB14
+#define CLAW_SCAN_TRIG PB10
+#define CLAW_SCAN_ECHO PB11
 
 // MOTORS
 #define SHOULDER_MOTOR_A PB_8
