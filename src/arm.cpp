@@ -218,3 +218,13 @@ void Arm::testArm() {
     this->claw->write(100);
     delay(500);
 }
+
+bool Arm::magneticBomb() {
+    int magnet_detected = digitalRead(HALL_SENSOR);
+    if (magnet_detected == 1) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}

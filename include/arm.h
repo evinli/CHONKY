@@ -76,6 +76,8 @@ class Arm {
     void goToRestingPos(); 
     Servo* elbow;
 
+    bool magneticBomb();
+
   private:
     Motor* shoulder;
 
