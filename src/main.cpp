@@ -90,14 +90,17 @@ void loop() {
         case(MasterState::FirstIdol): {
             display.clear();
             display.write(0, "First Idol State");
-            if (idolDetect(IDOL_DETECT_SAMPLES) < 30) { // trial and error, how close is idol 1 to arm?
+            if (idolDetect(IDOL_DETECT_SAMPLES) < 15) { // trial and error, how close is idol 1 to arm?
                 display.clear();
                 display.write(0, "Idol 1 Detected");
                 stopSlave();
                 if (idolDetect(IDOL_DETECT_SAMPLES) < 15) { // trial and error, how close is idol 1 to arm?
                     display.clear();
                     display.write(0, "Idol 1 Detected & Verified");
+                    arm.rotateBase(270);
+                    arm.grasp();
                     // Treasure pickup sequence
+
                     // arm.sweepAndDetect(5, 25, 30, RIGHT_DROPOFF_ANGLE); // trial and error, where should arm go to pick up idol 1
 
                     // // Reset arm 
