@@ -33,6 +33,13 @@ class Motor {
      */
     void stop();
 
+    /**
+     * @brief Hard brake motors 
+     * 
+     * @param currSpeed current motor direction
+     */
+    void hardStop(int currDir);
+
   private:
     PinName pinA;
     PinName pinB;

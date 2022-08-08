@@ -63,7 +63,11 @@ class PID {
      * 
      * @return current PID error
      */
-    int usePID(int idolCount);
+    int usePID();
+
+    bool refindTape(int sideToSweep, long maxSweepTime);
+
+    void resetPID();
 
   private:
     float KP, KD, KI;
@@ -106,6 +110,14 @@ class PID {
     int getTapeError(bool leftOnWhite, bool centreOnWhite, bool rightOnWhite);
 
     /**
+     * @brief Determine if all sensors are on white paint
+     * 
+     * @return true if yes
+     * @return false otherwise
+     */
+    bool allOnWhite();
+
+    /**
      * @brief Determine IR following PID error based on sensor states
      * 
      * @param leftOffIR left sensor state
@@ -114,4 +126,5 @@ class PID {
      * @return PID error
      */
     int getIRError(bool leftOffIR, bool centreOffIR, bool rightOffIR);
+
 };

@@ -16,6 +16,9 @@
 #define MOTOR_FREQ 100
 #define SERVO_FREQ 50
 #define MAP_8_BIT_TO_12_BIT 16
+#define MAX_SPEED 255
+#define FORWARDS_DIR 0
+#define BACKWARDS_DIR 1
 
 // OLED DISPLAY
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -24,12 +27,17 @@
 
 // TAPE FOLLOWING
 #define TAPE_WHITE_THRESHOLD 400
-#define TAPE_NUM_READINGS 1
 #define TAPE_ON 0
 #define TAPE_ONE_OFF 1
 #define TAPE_TWO_OFF 3
-#define TAPE_THREE_OFF 5
+#define TAPE_THREE_OFF 6
 #define ALL_HIGH 50
+
+// SWEEPING
+#define LEFT_SIDE 0
+#define RIGHT_SIDE 1
+#define MAX_SWEEP_TIME 5000
+#define SWEEP_SPEED 90
 
 // IR FOLLOWING
 #define IR_THRESHOLD 190
@@ -37,7 +45,8 @@
 #define ON_TEN_K 0
 #define IR_ONE_OFF 1
 #define IR_TWO_OFF 3
-#define IR_THREE_OFF 6
+#define IR_THREE_OFF 5
+#define IR_FOLLOW_ARCHWAY 2000
 
 // SERVO TUNING
 #define SERVO_ZERO_VALUE 540

@@ -10,9 +10,17 @@
 
 typedef enum {
     Inactive,
-    TapeFollowing,
+    TapeFollowToFirstIdol,
+    RefindTapePostFirstIdol,
+    ChickenWire,
+    RefindTapePostChickenWire,
+    TapeFollowToSecondIdol,
+    RefindTapePostSecondIdol,
     Archway,
-    IRFollowing,
-    EdgeFollowing,
+    IRStraightFollow,
+    DriveToThirdIdol,
+    WaitForThirdIdolPickup,
+    RefindIRPostThirdIdol,
+    IRFollowToFourthIdol,
     Done,
 } SlaveState;
