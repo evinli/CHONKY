@@ -13,6 +13,7 @@
 typedef enum {
     Inactive,
     FirstIdol,
+    PostFirstIdol,
     SecondIdol,
     ThirdIdol,
     FourthIdol,

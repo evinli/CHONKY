@@ -68,7 +68,9 @@ class Arm {
     void testBase();
 
     void testArm();
-    
+
+    void flatten();
+
     double avgSampleSonar(int numReadings, NewPing* sonarSensor);
 
     void dropInBasket(int dropOffSide);  

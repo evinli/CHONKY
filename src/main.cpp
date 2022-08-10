@@ -11,13 +11,13 @@
 #include "OLED.h"
 #include "arm.h"
 #include "constants.h"
+#include "master.h"
 #include "motor.h"
 #include "pins.h"
 #include "servo.h"
-#include "master.h"
 
 // Class instantiations
-Servo clawServo(CLAW_SERVO); // CLAW SERVO MUST BE INITIALIZED BEFORE SHOULDER DUE TO PIN DEPENDENCY
+Servo clawServo(CLAW_SERVO);  // CLAW SERVO MUST BE INITIALIZED BEFORE SHOULDER DUE TO PIN DEPENDENCY
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 OLED display(&display_handler);
 Servo elbowServo(ELBOW_SERVO);
@@ -25,7 +25,7 @@ Servo baseServo(BASE_PLATE_SERVO);
 Motor shoulderMotor(SHOULDER_MOTOR_A, SHOULDER_MOTOR_B);
 NewPing horizontalSonar(TREASURE_TRIG, TREASURE_ECHO, 200);  // NewPing setup of pins and maximum distance
 NewPing verticalSonar(CLAW_SCAN_TRIG, CLAW_SCAN_ECHO, 200);
-Arm arm(&shoulderMotor, &elbowServo, &clawServo, &baseServo, 170, &verticalSonar, &horizontalSonar, &display);
+Arm arm(&shoulderMotor, &elbowServo, &clawServo, &baseServo, 200, &verticalSonar, &horizontalSonar, &display);
 
 // Variable declarations
 MasterState state;
@@ -33,6 +33,7 @@ int idolCount;
 
 // Function prototypes
 double idolDetect(int numReadings);
+double idolDetectHorizontal(int numReadings);
 bool advanceState();
 void signalSlaveAdvance();
 void endSlaveAdvanceSignal();
@@ -42,101 +43,187 @@ void goSlave();
 void setup() {
     display.setUp();
     display.clear();
-    display.write(0,"started");
+    display.write(0, "started");
     state = MasterState::Inactive;
     idolCount = 0;
     pinMode(SLAVE_ADVANCE_STATE, OUTPUT);
     pinMode(SLAVE_STOP_DRIVE, OUTPUT);
+    pinMode(LED_BUILTIN,OUTPUT);
+    digitalWrite(LED_BUILTIN,LOW);
 }
 
-void tuneShoulder(){
+void tuneJoint(int pin, int displayPosition) {
     display.clear();
-    display.write(0,std::to_string(analogRead(SHOULDER_POT)));
+    display.write(displayPosition, std::to_string(analogRead(pin)));
 }
 
 void loop() {
-//    arm.rotateBase(90);
-//     delay(2000);
-//     arm.rotateBase(180);
-//     arm.moveInPlaneShoulderFirst(20,25);
-//     delay(2000);
-//     arm.moveInPlaneShoulderFirst(6,25);
-
 
 
         endSlaveAdvanceSignal();
 
-    switch(state) {
-        case(MasterState::Inactive): {
-        //     // display.clear();
-        //     // clawServo.write(CLAW_GRASP_ANGLE);
-        //     // elbowServo.write(45);
-        //     // display.write(0, std::to_string(analogRead(SHOULDER_POT)));
-        //     // shoulderMotor.setSpeed(80);
-        //     // delay(1000);
-        //     // shoulderMotor.setSpeed(-80);
-        //     // delay(1000);
-
-
-        arm.rotateBase(RIGHT_SIDE_ANGLE);
-        // arm.moveInPlaneShoulderFirst(5, 35); 
-        elbowServo.write(120);
-        clawServo.write(CLAW_OPEN_ANGLE);
-        delay(1000);
-        advanceState();
-        signalSlaveAdvance();
-        break;
+    switch (state) {
+        case (MasterState::Inactive): {
+            display.clear();
+            display.write(0, "Inactive State");
+            // Set arm to first idol detect position
+            clawServo.write(CLAW_OPEN_ANGLE);
+            arm.rotateBase(230);
+            arm.moveInPlaneElbowFirst(14, 32);
+            delay(1000);
+            advanceState();
+            signalSlaveAdvance();
+            break;
         }
-        case(MasterState::FirstIdol): {
+
+        case (MasterState::FirstIdol): {
             display.clear();
             display.write(0, "First Idol State");
-            if (idolDetect(IDOL_DETECT_SAMPLES) < 15) { // trial and error, how close is idol 1 to arm?
+            if (idolDetect(IDOL_DETECT_SAMPLES) < 15) {  // trial and error, how close is idol 1 to arm?
                 display.clear();
                 display.write(0, "Idol 1 Detected");
-                stopSlave();
-                if (idolDetect(IDOL_DETECT_SAMPLES) < 15) { // trial and error, how close is idol 1 to arm?
+                if (idolDetect(IDOL_DETECT_SAMPLES) < 15) {  // trial and error, how close is idol 1 to arm?
                     display.clear();
                     display.write(0, "Idol 1 Detected & Verified");
+                    stopSlave();
+                    delay(1000);
+                    arm.rotateBase(247);  // HC: move backward since base doesn't stop instantly
+                    arm.moveInPlaneElbowFirst(13, 28); //HC: move down and out to correct position
+
+                    delay(1000); //wait to hover for bomb detection
+
+                    if (!arm.magneticBomb()) {
+                        arm.grasp();
+                        delay(500);
+                        arm.dropInBasket(RIGHT_DROPOFF_ANGLE);
+                    }
+                    else{
+                        display.clear();
+                        display.write(0,"bomb detected");
+                        delay(1000);
+                    }
+
+                    //  Reset arm
                     arm.rotateBase(270);
-                    arm.grasp();
-                    // Treasure pickup sequence
-
-                    // arm.sweepAndDetect(5, 25, 30, RIGHT_DROPOFF_ANGLE); // trial and error, where should arm go to pick up idol 1
-
-                    // // Reset arm 
-                    // arm.rotateBase(RIGHT_SIDE_ANGLE);
-                    // arm.moveInPlaneShoulderFirst(5, 25); // trial and error, where to move arm to detect idol 2
-                    delay(3000);
+                    arm.moveInPlaneShoulderFirst(13, 37); 
+                    clawServo.write(CLAW_OPEN_ANGLE);  // trial and error, where to move arm to detect idol 2
                     advanceState();
+                    signalSlaveAdvance();
                     goSlave();
                 }
             }
             break;
         }
 
-        case(MasterState::SecondIdol): {
+        case(MasterState::PostFirstIdol): {
+            delay(5000);
+            arm.moveInPlaneElbowFirst(17,33);
+            advanceState();
+            break;
+        }
+
+        case (MasterState::SecondIdol): {
             display.clear();
             display.write(0, "Second Idol State");
-            // if (idolDetect(IDOL_DETECT_SAMPLES) < 20) { // trial and error
-            //     display.clear();
-            //     display.write(0, "Idol 2 Detected");
-            //     stopSlave();
-            //     if (idolDetect(IDOL_DETECT_SAMPLES) < 20) { // trial and error
-            //         display.clear();
-            //         display.write(0, "Idol 2 Detected & Verified");
-            //         // Treasure pickup sequence
-            //         arm.sweepAndDetect(15, 20, 45, LEFT_DROPOFF_ANGLE); // trial and error, where should arm go to pick up idol 2
+            if (idolDetect(20) < 10) {  // trial and error
+                display.clear();
+                display.write(0, "Idol 2 Detected");
+                    display.clear();
+                    display.write(0, "Idol 2 Detected & Verified");
+                    stopSlave();
+                    arm.rotateBase(280);
+                    // Treasure pickup sequence
+                    arm.moveInPlaneElbowFirst(22, 29); //
+                    delay(1000);
 
-            //         // Move arm into resting position 
-            //         arm.goToRestingPos();
-            //         advanceState();
-            //         goSlave();
-            //     }
-            // }
+                    if (!arm.magneticBomb()) {
+                        arm.grasp();
+                        delay(500);
+                        arm.dropInBasket(RIGHT_DROPOFF_ANGLE);
+                    }
+                    else{
+                        display.clear();
+                        display.write(0,"bomb detected");
+                        delay(1000);
+                    }
+
+                    // // Move arm into resting position
+                    arm.goToRestingPos();
+                    advanceState();
+                    signalSlaveAdvance();
+                    goSlave();
+            }
+            break;
+        }
+
+        case (MasterState::ThirdIdol): {
+            display.clear();
+            display.write(0, "Third idol state");
+            delay(8000);
+            arm.moveInPlaneShoulderFirst(16,35);
+            clawServo.write(CLAW_OPEN_ANGLE);
+            arm.rotateBase(180);
+            arm.rotateBase(180);
+            arm.moveInPlaneShoulderFirst(16,35);
+
+            delay(1000);
+
+            if (!arm.magneticBomb()) {
+                arm.grasp();
+                delay(500);
+                arm.dropInBasket(RIGHT_DROPOFF_ANGLE);
+            }
+            else{
+                display.clear();
+                display.write(0,"bomb detected");
+                delay(1000);
+            }
+
+            //reset for next idol
+            arm.rotateBase(270);
+            arm.moveInPlaneElbowFirst(20,28);
+            advanceState();
+            signalSlaveAdvance();
+            break;
+        }
+
+        case(MasterState::FourthIdol):{
+            if (idolDetect(IDOL_DETECT_SAMPLES) < 15) {  // trial and error, how close is idol 1 to arm?
+                display.clear();
+                display.write(0, "Idol 1 Detected");
+                if (idolDetect(IDOL_DETECT_SAMPLES) < 15) {  // trial and error, how close is idol 1 to arm?
+                    display.clear();
+                    display.write(0, "Idol 1 Detected & Verified");
+                    stopSlave();
+                    delay(1000);
+                    arm.rotateBase(247);  // HC: move backward since base doesn't stop instantly
+                    arm.moveInPlaneElbowFirst(20, 28); //HC: move down and out to correct position
+
+                    delay(1000); //wait to hover for bomb detection
+
+                    if (!arm.magneticBomb()) {
+                        arm.grasp();
+                        delay(500);
+                        arm.dropInBasket(RIGHT_DROPOFF_ANGLE);
+                    }
+                    else{
+                        display.clear();
+                        display.write(0,"bomb detected");
+                        delay(1000);
+                    }
+
+                    //  Reset arm
+                    arm.rotateBase(270);
+                    arm.moveInPlaneShoulderFirst(13, 37); 
+                    clawServo.write(CLAW_OPEN_ANGLE);  // trial and error, where to move arm to detect idol 2
+                    advanceState();
+                    signalSlaveAdvance();
+                    goSlave();
+                }
+            }
             break;
         }
     }
-
 }
 
 double idolDetect(int numReadings) {
@@ -147,17 +234,31 @@ double idolDetect(int numReadings) {
         reading = verticalSonar.ping_cm();
         if (reading == 0) {
             sum += 400;
-        } 
-        else {
+        } else {
             sum += reading;
         }
     }
-    return (double)(sum)/numReadings;
+    return (double)(sum) / numReadings;
+}
+
+double idolDetectHorizontal(int numReadings) {
+    int sum = 0;
+    int reading;
+
+    for (int i = 0; i < numReadings; i++) {
+        reading = horizontalSonar.ping_cm();
+        if (reading == 0) {
+            sum += 400;
+        } else {
+            sum += reading;
+        }
+    }
+    return (double)(sum) / numReadings;
 }
 
 bool advanceState() {
     if (state == MasterState::Done) {
-         return false; 
+        return false;
     }
 
     state = static_cast<MasterState>(static_cast<int>(state) + 1);
@@ -170,8 +271,8 @@ void signalSlaveAdvance() {
     delay(100);
 }
 
-void endSlaveAdvanceSignal() { 
-    digitalWrite(SLAVE_ADVANCE_STATE, LOW); 
+void endSlaveAdvanceSignal() {
+    digitalWrite(SLAVE_ADVANCE_STATE, LOW);
 }
 
 void stopSlave() {
@@ -180,6 +281,6 @@ void stopSlave() {
     delay(500);
 }
 
-void goSlave() { 
-    digitalWrite(SLAVE_STOP_DRIVE, LOW); 
+void goSlave() {
+    digitalWrite(SLAVE_STOP_DRIVE, LOW);
 }

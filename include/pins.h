@@ -16,7 +16,7 @@
 #define SERIAL_RX PA10
 
 // MISC
-#define LED_BUILTIN PB2
+#define LED_BUILTIN PC13
 
 /////////////////// MASTER BLUEPILL ///////////////////
 // ULTRSONIC
@@ -31,8 +31,8 @@
 
 // SERVOS 
 #define BASE_PLATE_SERVO PA_1
-#define ELBOW_SERVO PA_0
-#define CLAW_SERVO PA_2
+#define ELBOW_SERVO PA_2
+#define CLAW_SERVO PA_0
 
 // POTENTIOMETERS
 #define SHOULDER_POT PA5
