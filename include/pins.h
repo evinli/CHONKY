@@ -16,7 +16,7 @@
 #define SERIAL_RX PA10
 
 // MISC
-#define LED_BUILTIN PB2
+#define LED_BUILTIN PC13
 
 /////////////////// MASTER BLUEPILL ///////////////////
 // ULTRSONIC

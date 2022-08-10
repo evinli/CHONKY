@@ -261,9 +261,16 @@ bool PID::refindTape(int sideToSweep, long maxSweepTime) {
             foundTape = false;
         }
     }
+    
+    if (sideToSweep == LEFT_SIDE) {
+        leftMotor->hardStop(BACKWARDS_DIR);
+        rightMotor->hardStop(FORWARDS_DIR);
+    }
+    if (sideToSweep == RIGHT_SIDE) {
+        leftMotor->hardStop(FORWARDS_DIR);
+        rightMotor->hardStop(BACKWARDS_DIR);
+    }
 
-    leftMotor->hardStop(FORWARDS_DIR);
-    rightMotor->hardStop(FORWARDS_DIR);
     return foundTape;
 }
 

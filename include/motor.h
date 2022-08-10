@@ -36,7 +36,7 @@ class Motor {
     /**
      * @brief Hard brake motors 
      * 
-     * @param currSpeed current motor direction
+     * @param currDir current motor direction
      */
     void hardStop(int currDir);
 

@@ -44,7 +44,7 @@ void Motor::hardStop(int currDir) {
     else if (currDir == BACKWARDS_DIR) {
         this->setSpeed(MAX_SPEED);
     }
-    delay(20);
+    delay(40);
     this->stop();
 }
 

@@ -68,6 +68,14 @@ class PID {
     bool refindTape(int sideToSweep, long maxSweepTime);
 
     void resetPID();
+    
+     /**
+     * @brief Determine if all sensors are on white paint
+     * 
+     * @return true if yes
+     * @return false otherwise
+     */
+    bool allOnWhite();
 
   private:
     float KP, KD, KI;
@@ -108,14 +116,6 @@ class PID {
      * @return PID error
      */
     int getTapeError(bool leftOnWhite, bool centreOnWhite, bool rightOnWhite);
-
-    /**
-     * @brief Determine if all sensors are on white paint
-     * 
-     * @return true if yes
-     * @return false otherwise
-     */
-    bool allOnWhite();
 
     /**
      * @brief Determine IR following PID error based on sensor states
