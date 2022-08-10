@@ -60,7 +60,7 @@ void tuneJoint(int pin, int displayPosition) {
 void loop() {
 
 
-        endSlaveAdvanceSignal();
+    endSlaveAdvanceSignal();
 
     switch (state) {
         case (MasterState::Inactive): {
@@ -159,24 +159,44 @@ void loop() {
         case (MasterState::ThirdIdol): {
             display.clear();
             display.write(0, "Third idol state");
-            delay(8000);
+            delay(7500);
             arm.moveInPlaneShoulderFirst(16,35);
             clawServo.write(CLAW_OPEN_ANGLE);
-            arm.rotateBase(180);
-            arm.rotateBase(180);
-            arm.moveInPlaneShoulderFirst(16,35);
+            arm.rotateBase(225);
+            arm.rotateBase(225);
+            arm.moveInPlaneShoulderFirst(19,30);
 
             delay(1000);
 
-            if (!arm.magneticBomb()) {
-                arm.grasp();
-                delay(500);
-                arm.dropInBasket(RIGHT_DROPOFF_ANGLE);
+            double slope=((double) (BASE_ONE_EIGHTY-BASE_NINETY))/ (double)(180 - 90);
+            int targetValue =((double) 135 * slope) - (slope*90-BASE_NINETY);  
+
+            int loopFlag=1;
+
+            //do the rotational sweep until we reach the end or we detect the idol
+            while(analogRead(BASE_POT)> && loopFlag){
+                rotateBase(BASE_CW_SPEED);
+                if(idolDetect(IDOL_DETECT_SAMPLES)<15){
+                    loopFlag=0;
+                }
             }
-            else{
-                display.clear();
-                display.write(0,"bomb detected");
-                delay(1000);
+
+            //stop the base
+            pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
+
+            //if we've detected the idol, move outward
+            if (!loopFlag){
+                if (!arm.magneticBomb()) {
+                    arm.moveInPlaneShoulderFirst(20,28)
+                    arm.grasp();
+                    delay(500);
+                    arm.dropInBasket(RIGHT_DROPOFF_ANGLE);
+                }
+                else{
+                    display.clear();
+                    display.write(0,"bomb detected");
+                    delay(1000);
+                }
             }
 
             //reset for next idol
