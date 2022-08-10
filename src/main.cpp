@@ -30,6 +30,7 @@ Arm arm(&shoulderMotor, &elbowServo, &clawServo, &baseServo, 200, &verticalSonar
 // Variable declarations
 MasterState state;
 int idolCount;
+long beforeTime;
 
 // Function prototypes
 double idolDetect(int numReadings);
@@ -59,12 +60,7 @@ void tuneJoint(int pin, int displayPosition) {
 
 void loop() {
 
-<<<<<<< HEAD
-        endSlaveAdvanceSignal();
-=======
-
     endSlaveAdvanceSignal();
->>>>>>> d252e00b4689cfa433c7a790cc25249b2f15c931
 
     switch (state) {
         case (MasterState::Inactive): {
@@ -72,8 +68,8 @@ void loop() {
             display.write(0, "Inactive State");
             // Set arm to first idol detect position
             clawServo.write(CLAW_OPEN_ANGLE);
-            arm.rotateBase(230);
-            arm.moveInPlaneElbowFirst(14, 32);
+            arm.rotateBase(270);
+            arm.moveInPlaneElbowFirst(8, 32);
             delay(1000);
             advanceState();
             signalSlaveAdvance();
@@ -91,7 +87,7 @@ void loop() {
                     display.write(0, "Idol 1 Detected & Verified");
                     stopSlave();
                     delay(1000);
-                    arm.rotateBase(237);  // HC: move backward since base doesn't stop instantly
+                    arm.rotateBase(280);  // HC: move backward since base doesn't stop instantly
                     arm.moveInPlaneElbowFirst(13, 29); //HC: move down and out to correct position
 
                     delay(1000); //wait to hover for bomb detection
@@ -122,7 +118,7 @@ void loop() {
 
         case(MasterState::PostFirstIdol): {
             delay(5000);
-            arm.moveInPlaneElbowFirst(17,33);
+            arm.moveInPlaneElbowFirst(12,33);
             advanceState();
             break;
         }
@@ -138,7 +134,7 @@ void loop() {
                     stopSlave();
                     arm.rotateBase(280);
                     // Treasure pickup sequence
-                    arm.moveInPlaneElbowFirst(19, 31); //
+                    arm.moveInPlaneElbowFirst(14, 30); //
                     delay(1000);
 
                     if (!arm.magneticBomb()) {
@@ -158,6 +154,8 @@ void loop() {
                     advanceState();
                     signalSlaveAdvance();
                     goSlave();
+                    beforeTime=millis();
+                    
             }
             break;
         }
@@ -165,98 +163,56 @@ void loop() {
         case (MasterState::ThirdIdol): {
             display.clear();
             display.write(0, "Third idol state");
-            delay(7500);
-<<<<<<< HEAD
-            arm.moveInPlaneElbowFirst(16,35);
-            clawServo.write(CLAW_OPEN_ANGLE);
-            display.clear();
-            display.write(0, "Third idol state");
-            delay(3000);
-            arm.moveInPlaneShoulderFirst(16,35);
-            clawServo.write(CLAW_OPEN_ANGLE);
-            arm.rotateBase(225);
-            arm.rotateBase(225);
-            arm.moveInPlaneShoulderFirst(11,37);
 
-            delay(10000);
+            if(millis()-beforeTime>7500){
+                arm.moveInPlaneShoulderFirst(16,35);
+                clawServo.write(CLAW_OPEN_ANGLE);
+                display.clear();
+                display.write(0, "Third idol state");
+                delay(3000);
+                arm.moveInPlaneShoulderFirst(16,35);
+                clawServo.write(CLAW_OPEN_ANGLE);
+                arm.rotateBase(270);
+                arm.rotateBase(270);
+                arm.moveInPlaneShoulderFirst(9,33);
+                int loopFlag=1;
 
-            // int loopFlag=1;
+                double slope=((double) (BASE_ONE_EIGHTY-BASE_NINETY))/ (double)(180 - 90);
+                int targetValue =((double) 135 * slope) - (slope*90-BASE_NINETY);
 
-            // double slope=((double) (BASE_ONE_EIGHTY-BASE_NINETY))/ (double)(180 - 90);
-            // int targetValue =((double) 135 * slope) - (slope*90-BASE_NINETY);
-
-            // while(analogRead(BASE_POT)>targetValue && loopFlag){
-            //     baseServo.write(75);
-            //     if(idolDetect(IDOL_DETECT_SAMPLES)<15){
-            //         loopFlag=0;
-            //     }
-            // }
-            
-            // pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
-            // if(!loopFlag){
-            //     display.clear();
-            //     display.write(0,"treasure detected");
-            // }
-
-            // if (!arm.magneticBomb() && !loopFlag) {
-            //     arm.moveInPlaneShoulderFirst(22,32);
-            //     arm.grasp();
-            //     delay(500);
-            //     arm.dropInBasket(RIGHT_DROPOFF_ANGLE);
-            // }
-            // else if (!loopFlag){
-            //     display.clear();
-            //     display.write(0,"bomb detected");
-            //     delay(1000);
-            // }
-=======
-            arm.moveInPlaneShoulderFirst(16,35);
-            clawServo.write(CLAW_OPEN_ANGLE);
-            arm.rotateBase(225);
-            arm.rotateBase(225);
-            arm.moveInPlaneShoulderFirst(19,30);
-
-            delay(1000);
-
-            double slope=((double) (BASE_ONE_EIGHTY-BASE_NINETY))/ (double)(180 - 90);
-            int targetValue =((double) 135 * slope) - (slope*90-BASE_NINETY);  
-
-            int loopFlag=1;
-
-            //do the rotational sweep until we reach the end or we detect the idol
-            while(analogRead(BASE_POT)> && loopFlag){
-                rotateBase(BASE_CW_SPEED);
-                if(idolDetect(IDOL_DETECT_SAMPLES)<15){
-                    loopFlag=0;
+                while(analogRead(BASE_POT)>targetValue && loopFlag){
+                    baseServo.write(75);
+                    if(idolDetect(IDOL_DETECT_SAMPLES)<15){
+                        loopFlag=0;
+                    }
                 }
-            }
+                
+                pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
+                if(!loopFlag){
+                    display.clear();
+                    display.write(0,"treasure detected");
+                }
 
-            //stop the base
-            pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
-
-            //if we've detected the idol, move outward
-            if (!loopFlag){
-                if (!arm.magneticBomb()) {
-                    arm.moveInPlaneShoulderFirst(20,28)
+                if (!arm.magneticBomb() && !loopFlag) {
+                    arm.moveInPlaneShoulderFirst(11,33);
                     arm.grasp();
                     delay(500);
                     arm.dropInBasket(RIGHT_DROPOFF_ANGLE);
                 }
-                else{
+                else if (!loopFlag){
                     display.clear();
                     display.write(0,"bomb detected");
                     delay(1000);
                 }
-            }
->>>>>>> d252e00b4689cfa433c7a790cc25249b2f15c931
 
-            //reset for next idol
-            arm.rotateBase(270);
-            arm.moveInPlaneElbowFirst(20,26);
-            
-            
-            advanceState();
-            signalSlaveAdvance();
+                //reset for next idol
+                arm.rotateBase(270);
+                arm.moveInPlaneElbowFirst(20,26);
+                
+                
+                advanceState();
+                signalSlaveAdvance();
+            }
 
             break;
         }

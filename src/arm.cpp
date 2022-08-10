@@ -100,6 +100,8 @@ void Arm::dropInBasket(int dropOffSide) {
     moveShoulderJoint(110); // trial and error
     delay(500);
     moveShoulderJoint(110);
+    delay(500);
+    moveShoulderJoint(110);
     this->elbow->slowWrite(30,8); // trial and error
     rotateBase(dropOffSide);
     this->elbow->slowWrite(90,8);
@@ -146,7 +148,7 @@ void Arm::goToRestingPos() {
 
     //Resting Position
     rotateBase(350);
-    elbow->slowWrite(41,8);
+    elbow->slowWrite(39,8);
     this->claw->slowWrite(CLAW_GRASP_ANGLE,8);
     moveShoulderJoint(18);
 }
