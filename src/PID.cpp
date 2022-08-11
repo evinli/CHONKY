@@ -113,9 +113,9 @@ int PID::usePID() {
             rightReading = analogRead(IR_RIGHT_DETECT);
 
             // Display readings
-            display->write(10, "Left Reading IR:" + std::to_string(leftReading));
+            // display->write(10, "Left Reading IR:" + std::to_string(leftReading));
             // display->write(20, "Centre Reading IR:" + std::to_string(centreReading));
-            display->write(30, "Right Reading IR:" + std::to_string(rightReading));
+            // display->write(30, "Right Reading IR:" + std::to_string(rightReading));
             
             // Determine sensor state
             bool leftOnIR = sensorOnIR(leftReading, IR_THRESHOLD);
@@ -123,10 +123,10 @@ int PID::usePID() {
             bool rightOnIR = sensorOnIR(rightReading, IR_THRESHOLD);
 
             // Get IR error
-            error = getIRError(leftOnIR, centreOnIR, rightOnIR);
+            error = getIRError(leftOnIR, rightOnIR);
 
             // Display error
-            display->write(40, "Error:" + std::to_string(error));
+            // display->write(40, "Error:" + std::to_string(error));
             break;
         }
 
@@ -233,8 +233,12 @@ bool PID::centreOnWhite() {
 }
 
 
-int PID::getIRError(bool leftOnIR, bool centreOnIR, bool rightOnIR) {
+int PID::getIRError(bool leftOnIR, bool rightOnIR) {
     // TRUTH TABLE
+    // ON, OFF                       error = one off
+    // OFF, OFF:                     error = none off
+    // OFF, ON                       error = -one off
+
     // OFF, OFF, OFF, lastError > 0: error = three off 
     // ON, OFF, OFF :                error = two off
     // ON, ON, OFF  :                error = one off
@@ -244,22 +248,27 @@ int PID::getIRError(bool leftOnIR, bool centreOnIR, bool rightOnIR) {
     // OFF, OFF, OFF, lastError < 0: error = -three off
 
     int error = ON_TEN_K;
-    if (!leftOnIR && !centreOnIR && !rightOnIR) {
-        if (this->lastError > 0) {
-            error = IR_THREE_OFF;
-        }
-        else if (this->lastError < 0) {
-            error = -IR_THREE_OFF;
-        }
-    }
-    else if (leftOnIR && !centreOnIR && !rightOnIR) error = IR_TWO_OFF;
-    else if (leftOnIR && centreOnIR && !rightOnIR) error = IR_ONE_OFF;
-    else if (!leftOnIR && centreOnIR && !rightOnIR) error = ON_TEN_K;
-    else if (!leftOnIR && centreOnIR && rightOnIR) error = -IR_ONE_OFF;
-    else if (!leftOnIR && !centreOnIR && rightOnIR) error = -IR_TWO_OFF;
+    if (!leftOnIR && !rightOnIR) error = ON_TEN_K;
+    else if (leftOnIR && !rightOnIR) error = IR_ONE_OFF;
+    else if (!leftOnIR && rightOnIR) error = -IR_ONE_OFF;
     else error = ON_TEN_K;
 
     return error;
+
+    // if (!leftOnIR && !centreOnIR && !rightOnIR) {
+    //     if (this->lastError > 0) {
+    //         error = IR_THREE_OFF;
+    //     }
+    //     else if (this->lastError < 0) {
+    //         error = -IR_THREE_OFF;
+    //     }
+    // }
+    // else if (leftOnIR && !centreOnIR && !rightOnIR) error = IR_TWO_OFF;
+    // else if (leftOnIR && centreOnIR && !rightOnIR) error = IR_ONE_OFF;
+    // else if (!leftOnIR && centreOnIR && !rightOnIR) error = ON_TEN_K;
+    // else if (!leftOnIR && centreOnIR && rightOnIR) error = -IR_ONE_OFF;
+    // else if (!leftOnIR && !centreOnIR && rightOnIR) error = -IR_TWO_OFF;
+    // else error = ON_TEN_K;
 }
 
 bool PID::refindTape(int sideToSweep, long maxSweepTime) {

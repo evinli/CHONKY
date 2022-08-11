@@ -40,12 +40,12 @@
 #define SWEEP_SPEED 95
 
 // IR FOLLOWING
-#define IR_THRESHOLD 250
+#define IR_THRESHOLD 100
 #define IR_NUM_READINGS 1
 #define ON_TEN_K 0
-#define IR_ONE_OFF 1
-#define IR_TWO_OFF 3
-#define IR_THREE_OFF 5
+#define IR_ONE_OFF 3
+// #define IR_TWO_OFF 3
+// #define IR_THREE_OFF 5
 #define IR_FOLLOW_ARCHWAY 3000
 
 // SERVO TUNING

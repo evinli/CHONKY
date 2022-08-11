@@ -24,5 +24,6 @@ typedef enum {
     WaitForThirdIdolPickup,
     RefindIRPostThirdIdol,
     IRFollowToFourthIdol,
+    DriveStraight,
     Done,
 } SlaveState;

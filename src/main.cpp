@@ -33,7 +33,7 @@ bool advanceState();
 
 void setup() {
     display.setUp();
-    state = SlaveState::IRFollowToFourthIdol;
+    state = SlaveState::Inactive;
     slaveEnabled = true;
     alreadyStopped = false;
     lastAdvanceTime = millis();
@@ -224,8 +224,8 @@ void loop() {
                 // rightMotor.hardStop(FORWARDS_DIR);
                 if (millis() - irFollowTime < IR_FOLLOW_ARCHWAY) { // trial and error IR_FOLLOW_ARCHWAY time until we get far enough through the archway
                     irFollow.setMotorSpeed(120);
-                    irFollow.setKP(12);
-                    irFollow.setKD(6);
+                    irFollow.setKP(18);
+                    irFollow.setKD(12);
                     irFollow.setKI(0);
                     irFollow.usePID();
                 } else {
@@ -267,23 +267,50 @@ void loop() {
             case(SlaveState::RefindIRPostThirdIdol): {
                 // display.clear();
                 // display.write(0, "State 13");
+                leftMotor.setSpeed(-120);
+                rightMotor.setSpeed(-120);
+                delay(500);
+                leftMotor.hardStop(BACKWARDS_DIR);
+                rightMotor.hardStop(BACKWARDS_DIR);
                 leftMotor.setSpeed(120);
                 rightMotor.setSpeed(-150);
-                delay(1900); // trial and error this until we get this to 90deg
+                delay(1450); // trial and error this until we get this to 90deg
                 leftMotor.hardStop(FORWARDS_DIR);
                 rightMotor.hardStop(BACKWARDS_DIR);
                 advanceState();
+                irFollowTime = millis();
                 break;
             }
 
             case(SlaveState::IRFollowToFourthIdol): {
-                display.clear();
+                // display.clear();
                 // display.write(0, "State 14");
-                irFollow.setMotorSpeed(120);
-                irFollow.setKP(12);
-                irFollow.setKD(6);
-                irFollow.setKI(0);
-                irFollow.usePID();
+                if (millis() - irFollowTime < 4000) {
+                    irFollow.setMotorSpeed(120);
+                    irFollow.setKP(15);
+                    irFollow.setKD(9);
+                    irFollow.setKI(0);
+                    irFollow.usePID();
+                }
+                else {
+                    leftMotor.hardStop(FORWARDS_DIR);
+                    rightMotor.hardStop(FORWARDS_DIR);
+                    advanceState();
+                    // irFollowTime = millis();
+                }
+                break;
+            }
+
+            case(SlaveState::DriveStraight): {
+                // if (millis() - irFollowTime < 2000) {
+                //     leftMotor.setSpeed(120);
+                //     rightMotor.setSpeed(180);
+                // }  
+                // else {
+                //     leftMotor.hardStop(FORWARDS_DIR);
+                //     rightMotor.hardStop(FORWARDS_DIR);
+                //     advanceState();
+                // } 
                 break;
             }
 

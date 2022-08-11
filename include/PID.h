@@ -129,6 +129,6 @@ class PID {
      * @param rightOffIR right sensor state
      * @return PID error
      */
-    int getIRError(bool leftOffIR, bool centreOffIR, bool rightOffIR);
+    int getIRError(bool leftOffIR, bool rightOffIR);
 
 };
