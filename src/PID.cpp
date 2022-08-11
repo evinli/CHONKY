@@ -72,9 +72,9 @@ int PID::usePID() {
             rightReading = analogRead(RIGHT_TAPE_SENSOR);
 
             // Display readings
-            display->write(10, "Left Reading:" + std::to_string(leftReading));
-            display->write(20, "Centre Reading:" + std::to_string(centreReading));
-            display->write(30, "Right Reading:" + std::to_string(rightReading));
+            // display->write(10, "Left Reading:" + std::to_string(leftReading));
+            // display->write(20, "Centre Reading:" + std::to_string(centreReading));
+            // display->write(30, "Right Reading:" + std::to_string(rightReading));
 
             // Get tape error
             bool leftOnWhite = sensorOnWhite(leftReading, TAPE_WHITE_THRESHOLD);
@@ -83,7 +83,7 @@ int PID::usePID() {
             error = getTapeError(leftOnWhite, centreOnWhite, rightOnWhite);
 
             // Display tape error 
-            display->write(40, "Error:" + std::to_string(error));
+            // display->write(40, "Error:" + std::to_string(error));
 
             // Return error immediately if at chicken wire or t-stop
             if (error == ALL_HIGH) {
@@ -100,11 +100,11 @@ int PID::usePID() {
             delayMicroseconds(25);
             leftReading = analogRead(IR_LEFT_DETECT);
             
-            digitalWrite(IR_MOSFET, HIGH);
-            delayMicroseconds(300);
-            digitalWrite(IR_MOSFET, LOW);
-            delayMicroseconds(25);
-            centreReading = analogRead(IR_CENTRE_DETECT);
+            // digitalWrite(IR_MOSFET, HIGH);
+            // delayMicroseconds(300);
+            // digitalWrite(IR_MOSFET, LOW);
+            // delayMicroseconds(25);
+            // centreReading = analogRead(IR_CENTRE_DETECT);
 
             digitalWrite(IR_MOSFET, HIGH);
             delayMicroseconds(300);
@@ -114,12 +114,12 @@ int PID::usePID() {
 
             // Display readings
             display->write(10, "Left Reading IR:" + std::to_string(leftReading));
-            display->write(20, "Centre Reading IR:" + std::to_string(centreReading));
+            // display->write(20, "Centre Reading IR:" + std::to_string(centreReading));
             display->write(30, "Right Reading IR:" + std::to_string(rightReading));
             
             // Determine sensor state
             bool leftOnIR = sensorOnIR(leftReading, IR_THRESHOLD);
-            bool centreOnIR = sensorOnIR(centreReading, IR_THRESHOLD);
+            // bool centreOnIR = sensorOnIR(centreReading, IR_THRESHOLD);
             bool rightOnIR = sensorOnIR(rightReading, IR_THRESHOLD);
 
             // Get IR error
