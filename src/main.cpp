@@ -177,7 +177,7 @@ void loop() {
                 pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
                 arm.rotateBase(270);
                 arm.rotateBase(270);
-                arm.moveInPlaneShoulderFirst(9, 32);
+                arm.moveInPlaneShoulderFirst(9, 29);
                 int loopFlag = 1;
 
                 double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY)) / (double)(180 - 90);
@@ -195,7 +195,7 @@ void loop() {
                 if (!loopFlag) {
                     display.clear();
                     display.write(0, "treasure detected");
-                    arm.moveInPlaneShoulderFirst(15, 30);
+                    arm.moveInPlaneShoulderFirst(9, 33);
                     delay(1000);
                 }
 
@@ -208,7 +208,7 @@ void loop() {
                     display.write(0, "bomb detected");
                     delay(1000);
                 } else {
-                    arm.moveInPlaneShoulderFirst(17, 32);
+                    arm.moveInPlaneShoulderFirst(17, 34);
                     targetValue = ((double)270 * slope) - (slope * 90 - BASE_NINETY);
                     loopFlag = 1;
 
@@ -257,11 +257,11 @@ void loop() {
                 arm.moveInPlaneShoulderFirst(16, 35);
                 arm.rotateBase(330);
                 arm.rotateBase(330);
-                arm.moveInPlaneShoulderFirst(23, 34);
+                arm.moveInPlaneShoulderFirst(14, 34);
                 int loopFlag = 1;
 
                 double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY)) / (double)(180 - 90);
-                int targetValue = ((double)200 * slope) - (slope * 90 - BASE_NINETY);
+                int targetValue = ((double)180 * slope) - (slope * 90 - BASE_NINETY);
 
                 while (analogRead(BASE_POT) > targetValue && loopFlag) {
                     baseServo.write(75);
@@ -275,7 +275,7 @@ void loop() {
                 if (!loopFlag) {
                     display.clear();
                     display.write(0, "treasure detected");
-                    arm.moveInPlaneShoulderFirst(25, 30);
+                    arm.moveInPlaneShoulderFirst(16, 30);
                     delay(1000);
                 }
 
@@ -288,7 +288,7 @@ void loop() {
                     display.write(0, "bomb detected");
                     delay(1000);
                 } else {
-                    arm.moveInPlaneShoulderFirst(25, 32);
+                    arm.moveInPlaneShoulderFirst(10, 32);
                     targetValue = ((double)330 * slope) - (slope * 90 - BASE_NINETY);
                     loopFlag = 1;
 
@@ -303,7 +303,7 @@ void loop() {
                     if (!loopFlag) {
                         display.clear();
                         display.write(0, "treasure detected");
-                        arm.moveInPlaneShoulderFirst(26, 30);
+                        arm.moveInPlaneShoulderFirst(14, 30);
                         delay(1000);
                     }
 

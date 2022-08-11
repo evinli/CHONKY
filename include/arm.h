@@ -80,6 +80,8 @@ class Arm {
 
     bool magneticBomb();
 
+    boolean magnetSweepAndDetect(double startingDist, double endingDist, double height, int dropOffSide);
+
   private:
     Motor* shoulder;
 

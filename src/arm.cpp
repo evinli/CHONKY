@@ -102,9 +102,11 @@ void Arm::dropInBasket(int dropOffSide) {
     moveShoulderJoint(110);
     delay(500);
     moveShoulderJoint(110);
+    delay(250);
+    moveShoulderJoint(110);
     this->elbow->slowWrite(30,8); // trial and error
     rotateBase(dropOffSide);
-    this->elbow->slowWrite(90,8);
+    this->elbow->slowWrite(92,8);
     claw->write(CLAW_OPEN_ANGLE);
 
     delay(1500);
@@ -127,6 +129,16 @@ void Arm::sweepAndDetect(double startingDist, double endingDist, double height, 
             break;
         }
     }
+}
+
+boolean Arm::magnetSweepAndDetect(double startingDist, double endingDist, double height, int dropOffSide) {
+    for (double i = startingDist; i < endingDist; i += SWEEP_STEP_SIZE) {
+        moveInPlaneShoulderFirst(i, height);
+        if (magneticBomb()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void Arm::graspSequence(double startingDist, double currentHeight) {
@@ -243,6 +255,6 @@ bool Arm::magneticBomb() {
         magnet_detected+=digitalRead(HALL_SENSOR);
     }
 
-    return(magnet_detected<12);
+    return(magnet_detected<15);
 
 }
