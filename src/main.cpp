@@ -77,9 +77,9 @@ void loop() {
             case(SlaveState::TapeFollowToFirstIdol): {
                 display.clear();
                 display.write(0, "State 1");
-                tapeFollow.setMotorSpeed(110);
-                tapeFollow.setKP(12);
-                tapeFollow.setKD(6);
+                tapeFollow.setMotorSpeed(150);
+                tapeFollow.setKP(16);
+                tapeFollow.setKD(10);
                 tapeFollow.setKI(0);
                 tapeFollow.usePID();
                 break;
@@ -99,13 +99,13 @@ void loop() {
                 display.clear();
                 display.write(0, "State 3");
                 tapeFollow.setMotorSpeed(100);
-                tapeFollow.setKP(14);
-                tapeFollow.setKD(8);
+                tapeFollow.setKP(12);
+                tapeFollow.setKD(6);
                 tapeFollow.setKI(0);
                 if (tapeFollow.usePID() == ALL_HIGH) {
                     leftMotor.setSpeed(160);
                     rightMotor.setSpeed(160);
-                    delay(750);
+                    delay(700);
                     tapeFollow.resetPID(); 
                     advanceState();
                 }
@@ -131,7 +131,7 @@ void loop() {
             case(SlaveState::TapeFollowToSecondIdol): {
                 display.clear();
                 display.write(0, "State 5");
-                tapeFollow.setMotorSpeed(100);
+                tapeFollow.setMotorSpeed(120);
                 tapeFollow.setKP(12);
                 tapeFollow.setKD(6);
                 tapeFollow.setKI(0);
@@ -144,6 +144,28 @@ void loop() {
                 display.write(0, "State 6");
                 if (tapeFollow.refindTape(LEFT_SIDE, MAX_SWEEP_TIME)) {
                     tapeFollow.resetPID();
+                    advanceState();
+                }
+                break;
+            }
+
+            case(SlaveState::BackUp): {
+                display.clear();
+                display.write(0, "State 7");
+                leftMotor.setSpeed(-150);
+                rightMotor.setSpeed(-150);
+                delay(300);
+                leftMotor.hardStop(BACKWARDS_DIR);
+                rightMotor.hardStop(BACKWARDS_DIR);
+                advanceState();
+                break;
+            }
+
+            case(SlaveState::RefindTapeAgain): {
+                display.clear();
+                display.write(0, "State 8");
+                if (tapeFollow.refindTape(LEFT_SIDE, MAX_SWEEP_TIME)) {
+                    tapeFollow.resetPID();
                     tapeFollowTime = millis();
                     advanceState();
                 }
@@ -152,28 +174,34 @@ void loop() {
             
             case(SlaveState::Archway): {
                 display.clear();
-                display.write(0, "State 7");
-                tapeFollow.setMotorSpeed(80);
-                tapeFollow.setKP(12);
+                display.write(0, "State 9");
+                tapeFollow.setMotorSpeed(130);
+                tapeFollow.setKP(16);
                 tapeFollow.setKD(6);
                 tapeFollow.setKI(0);
                 if (tapeFollow.usePID() == ALL_HIGH) {
                     display.clear();
                     display.write(0, "all high triggered");
-                    leftMotor.hardStop(FORWARDS_DIR);
-                    rightMotor.hardStop(FORWARDS_DIR);
+                    leftMotor.stop();
+                    rightMotor.stop();
                     delay(2000);
                     tapeFollow.resetPID();
+                    leftMotor.setSpeed(-70);
+                    rightMotor.setSpeed(120);
+                    delay(200);
                     advanceState();
                     irFollowTime = millis();
                 } 
-                else if (millis() - tapeFollowTime > 3000) {
+                else if (millis() - tapeFollowTime > 2300) {
                     display.clear();
                     display.write(0, "time cap triggered");
-                    leftMotor.hardStop(FORWARDS_DIR);
-                    rightMotor.hardStop(FORWARDS_DIR);
+                    leftMotor.stop();
+                    rightMotor.stop();
                     delay(2000);
                     tapeFollow.resetPID();
+                    leftMotor.setSpeed(-70);
+                    rightMotor.setSpeed(120);
+                    delay(200);
                     advanceState();
                     irFollowTime = millis();
                 }
@@ -182,7 +210,7 @@ void loop() {
 
             case(SlaveState::IRStraightFollow): {
                 display.clear();
-                display.write(0, "State 8");
+                display.write(0, "State 10");
                 // leftMotor.setSpeed(100);
                 // rightMotor.setSpeed(130);
                 // delay(5000);
@@ -209,11 +237,16 @@ void loop() {
 
             case(SlaveState::DriveToThirdIdol): {
                 display.clear();
-                display.write(0, "State 9");
+                display.write(0, "State 11");
                 leftMotor.setSpeed(-120);
+                rightMotor.setSpeed(150);
+                delay(1000); // trial and error this until we get this to 90deg
+                leftMotor.hardStop(BACKWARDS_DIR);
+                rightMotor.hardStop(FORWARDS_DIR);
+                leftMotor.setSpeed(120);
                 rightMotor.setSpeed(120);
-                delay(3500); // trial and error this until we get this to 90deg
-                leftMotor.stop();
+                delay(500);
+                leftMotor.hardStop(FORWARDS_DIR);
                 rightMotor.hardStop(FORWARDS_DIR);
                 advanceState();
                 break;
@@ -221,17 +254,17 @@ void loop() {
 
             case(SlaveState::WaitForThirdIdolPickup): {
                 display.clear();
-                display.write(0, "State 10");
+                display.write(0, "State 12");
                 break;           
             }
             
             case(SlaveState::RefindIRPostThirdIdol): {
                 display.clear();
-                display.write(0, "State 11");
+                display.write(0, "State 13");
                 leftMotor.setSpeed(120);
-                rightMotor.setSpeed(-120);
-                delay(3500); // trial and error this until we get this back to 90deg
-                leftMotor.stop();
+                rightMotor.setSpeed(-150);
+                delay(2000); // trial and error this until we get this to 90deg
+                leftMotor.hardStop(FORWARDS_DIR);
                 rightMotor.hardStop(BACKWARDS_DIR);
                 advanceState();
                 break;
@@ -239,7 +272,7 @@ void loop() {
 
             case(SlaveState::IRFollowToFourthIdol): {
                 display.clear();
-                display.write(0, "State 12");
+                display.write(0, "State 14");
                 irFollow.setMotorSpeed(120);
                 irFollow.setKP(12);
                 irFollow.setKD(6);
@@ -250,7 +283,7 @@ void loop() {
 
             case(SlaveState::Done): {
                 display.clear();
-                display.write(0, "State 13");
+                display.write(0, "State 15");
                 leftMotor.stop();
                 rightMotor.stop();
                 break;

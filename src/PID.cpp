@@ -206,12 +206,32 @@ bool PID::allOnWhite() {
     int centreReading = analogRead(CENTER_TAPE_SENSOR);
     int rightReading = analogRead(RIGHT_TAPE_SENSOR);
 
-    int leftOnWhite = sensorOnWhite(leftReading, TAPE_WHITE_THRESHOLD);
-    int centreOnWhite = sensorOnWhite(centreReading, TAPE_WHITE_THRESHOLD);
-    int rightOnWhite = sensorOnWhite(rightOnWhite, TAPE_WHITE_THRESHOLD);
+    bool leftOnWhite = sensorOnWhite(leftReading, TAPE_WHITE_THRESHOLD);
+    bool centreOnWhite = sensorOnWhite(centreReading, TAPE_WHITE_THRESHOLD);
+    bool rightOnWhite = sensorOnWhite(rightReading, TAPE_WHITE_THRESHOLD);
 
     return leftOnWhite && centreOnWhite && rightOnWhite;
 }
+
+bool PID::allOnBlack() {
+    int leftReading = analogRead(LEFT_TAPE_SENSOR);
+    int centreReading = analogRead(CENTER_TAPE_SENSOR);
+    int rightReading = analogRead(RIGHT_TAPE_SENSOR);
+
+    bool leftOnWhite = sensorOnWhite(leftReading, TAPE_WHITE_THRESHOLD);
+    bool centreOnWhite = sensorOnWhite(centreReading, TAPE_WHITE_THRESHOLD);
+    bool rightOnWhite = sensorOnWhite(rightReading, TAPE_WHITE_THRESHOLD);
+
+    return !leftOnWhite && !centreOnWhite && !rightOnWhite;
+}
+
+bool PID::centreOnWhite() {
+     int centreReading = analogRead(CENTER_TAPE_SENSOR);
+     bool centreOnWhite = sensorOnWhite(centreReading, TAPE_WHITE_THRESHOLD);
+
+     return centreOnWhite;
+}
+
 
 int PID::getIRError(bool leftOnIR, bool centreOnIR, bool rightOnIR) {
     // TRUTH TABLE
@@ -259,18 +279,12 @@ bool PID::refindTape(int sideToSweep, long maxSweepTime) {
         }
         else {
             foundTape = false;
+            break;
         }
     }
-    
-    if (sideToSweep == LEFT_SIDE) {
-        leftMotor->hardStop(BACKWARDS_DIR);
-        rightMotor->hardStop(FORWARDS_DIR);
-    }
-    if (sideToSweep == RIGHT_SIDE) {
-        leftMotor->hardStop(FORWARDS_DIR);
-        rightMotor->hardStop(BACKWARDS_DIR);
-    }
 
+    leftMotor->stop();
+    rightMotor->stop();
     return foundTape;
 }
 

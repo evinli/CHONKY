@@ -16,6 +16,8 @@ typedef enum {
     RefindTapePostChickenWire,
     TapeFollowToSecondIdol,
     RefindTapePostSecondIdol,
+    BackUp,
+    RefindTapeAgain,
     Archway,
     IRStraightFollow,
     DriveToThirdIdol,

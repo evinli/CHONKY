@@ -68,7 +68,7 @@ class PID {
     bool refindTape(int sideToSweep, long maxSweepTime);
 
     void resetPID();
-    
+
      /**
      * @brief Determine if all sensors are on white paint
      * 
@@ -76,6 +76,10 @@ class PID {
      * @return false otherwise
      */
     bool allOnWhite();
+
+    bool allOnBlack();
+
+    bool centreOnWhite();
 
   private:
     float KP, KD, KI;
