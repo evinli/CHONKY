@@ -132,7 +132,7 @@ void loop() {
                 stopSlave();
                 arm.rotateBase(278);
                 // Treasure pickup sequence
-                arm.moveInPlaneElbowFirst(14, 31);  //
+                arm.moveInPlaneElbowFirst(14, 30);  //
                 delay(1000);
 
                 if (!arm.magneticBomb()) {
@@ -169,7 +169,7 @@ void loop() {
                 clawServo.write(CLAW_OPEN_ANGLE);
                 display.clear();
                 display.write(0, "Third idol state");
-                delay(3000);
+                delay(1000);
                 arm.moveInPlaneShoulderFirst(16, 35);
                 clawServo.write(CLAW_OPEN_ANGLE);
                 baseServo.write(BASE_CCW_SPEED);
@@ -177,7 +177,7 @@ void loop() {
                 pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
                 arm.rotateBase(270);
                 arm.rotateBase(270);
-                arm.moveInPlaneShoulderFirst(9, 29);
+                arm.moveInPlaneShoulderFirst(9, 29); //MOVE THIS FURTHER OUT ???
                 int loopFlag = 1;
 
                 double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY)) / (double)(180 - 90);
@@ -208,12 +208,12 @@ void loop() {
                     display.write(0, "bomb detected");
                     delay(1000);
                 } else {
-                    arm.moveInPlaneShoulderFirst(17, 34);
+                    arm.moveInPlaneShoulderFirst(17, 31);
                     targetValue = ((double)270 * slope) - (slope * 90 - BASE_NINETY);
                     loopFlag = 1;
 
                     while (analogRead(BASE_POT) < targetValue && loopFlag) {
-                        baseServo.write(BASE_CW_SPEED); 
+                        baseServo.write(86); 
                         if (idolDetect(IDOL_DETECT_SAMPLES) < 15) {
                             loopFlag = 0;
                         }
@@ -223,7 +223,7 @@ void loop() {
                     if (!loopFlag) {
                         display.clear();
                         display.write(0, "treasure detected");
-                        arm.moveInPlaneShoulderFirst(20, 30);
+                        arm.moveInPlaneShoulderFirst(19, 28);
                         delay(1000);
                     }
 
@@ -240,6 +240,7 @@ void loop() {
                 // reset for next idol
                 arm.rotateBase(270);
                 arm.moveInPlaneElbowFirst(20, 35);
+                arm.moveInPlaneElbowFirst(20, 35);
                 advanceState();
                 signalSlaveAdvance();
 
@@ -254,9 +255,9 @@ void loop() {
                 clawServo.write(CLAW_OPEN_ANGLE);
                 display.clear();
                 display.write(0, "Fourth idol state");
-                arm.moveInPlaneShoulderFirst(16, 35);
-                arm.rotateBase(330);
-                arm.rotateBase(330);
+                arm.moveInPlaneShoulderFirst(18, 35);
+                arm.rotateBase(315);
+                arm.rotateBase(315);
                 arm.moveInPlaneShoulderFirst(14, 34);
                 int loopFlag = 1;
 
@@ -289,11 +290,11 @@ void loop() {
                     delay(1000);
                 } else {
                     arm.moveInPlaneShoulderFirst(10, 32);
-                    targetValue = ((double)330 * slope) - (slope * 90 - BASE_NINETY);
+                    targetValue = ((double)315 * slope) - (slope * 90 - BASE_NINETY);
                     loopFlag = 1;
 
                     while (analogRead(BASE_POT) < targetValue && loopFlag) {
-                        baseServo.write(BASE_CW_SPEED);
+                        baseServo.write(86);
                         if (idolDetect(IDOL_DETECT_SAMPLES) < 15) {
                             loopFlag = 0;
                         }

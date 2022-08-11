@@ -29,6 +29,8 @@ void Arm::moveInPlaneShoulderFirst(double distanceFromChassis, double heightAbov
     double alpha = getAlpha(heightAboveGround, distanceFromChassis);
     double shoulderJointAngle = alpha + theta;
     moveShoulderJoint(shoulderJointAngle);
+    delay(300);
+    moveShoulderJoint(shoulderJointAngle);
     elbow->slowWrite(180 - phi, 8);
 }
 
@@ -39,6 +41,8 @@ void Arm::moveInPlaneElbowFirst(double distanceFromChassis, double heightAboveGr
     double alpha = getAlpha(heightAboveGround, distanceFromChassis);
     double shoulderJointAngle = alpha + theta;
     elbow->slowWrite(180 - phi, 8);
+    moveShoulderJoint(shoulderJointAngle);
+    delay(300);
     moveShoulderJoint(shoulderJointAngle);
 }
 
@@ -159,6 +163,8 @@ void Arm::goToRestingPos() {
     claw->write(CLAW_OPEN_ANGLE);
 
     //Resting Position
+    rotateBase(350);
+    delay(300);
     rotateBase(350);
     elbow->slowWrite(35,8);
     this->claw->slowWrite(CLAW_GRASP_ANGLE,8);
