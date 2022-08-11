@@ -257,10 +257,10 @@ void Arm::testArm() {
 bool Arm::magneticBomb() {
     int magnet_detected = 0;
 
-    for (int i=0;i<15;i++){
+    for (int i=0;i<20;i++){
         magnet_detected+=digitalRead(HALL_SENSOR);
     }
 
-    return(magnet_detected<15);
+    return(magnet_detected<20);
 
 }

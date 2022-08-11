@@ -170,14 +170,14 @@ void loop() {
                 display.clear();
                 display.write(0, "Third idol state");
                 delay(1000);
-                arm.moveInPlaneShoulderFirst(16, 35);
+                arm.moveInPlaneShoulderFirst(19, 35);
                 clawServo.write(CLAW_OPEN_ANGLE);
                 baseServo.write(BASE_CCW_SPEED);
                 delay(250);
                 pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
                 arm.rotateBase(270);
                 arm.rotateBase(270);
-                arm.moveInPlaneShoulderFirst(9, 29); //MOVE THIS FURTHER OUT ???
+                arm.moveInPlaneShoulderFirst(12, 29); //MOVE THIS FURTHER OUT ???
                 int loopFlag = 1;
 
                 double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY)) / (double)(180 - 90);
@@ -195,7 +195,7 @@ void loop() {
                 if (!loopFlag) {
                     display.clear();
                     display.write(0, "treasure detected");
-                    arm.moveInPlaneShoulderFirst(9, 33);
+                    arm.moveInPlaneShoulderFirst(12, 30);
                     delay(1000);
                 }
 
@@ -223,7 +223,7 @@ void loop() {
                     if (!loopFlag) {
                         display.clear();
                         display.write(0, "treasure detected");
-                        arm.moveInPlaneShoulderFirst(19, 28);
+                        arm.moveInPlaneShoulderFirst(19, 30);
                         delay(1000);
                     }
 
