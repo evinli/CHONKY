@@ -148,7 +148,7 @@ void Arm::goToRestingPos() {
 
     //Resting Position
     rotateBase(350);
-    elbow->slowWrite(39,8);
+    elbow->slowWrite(35,8);
     this->claw->slowWrite(CLAW_GRASP_ANGLE,8);
     moveShoulderJoint(18);
 }
