@@ -4,8 +4,7 @@
  * @brief     Custom servo class 
  */
 
-#ifndef __SERVO_H__
-#define __SERVO_H__
+#pragma once
 
 #include "pins.h"
 #include "Arduino.h"
@@ -40,5 +39,3 @@ class Servo {
       PinName pwmPin;
       int currentAngle;
 };
-
-#endif // __SERVOP_H__

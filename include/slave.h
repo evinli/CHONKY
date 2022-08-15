@@ -7,23 +7,46 @@
 #pragma once
 
 #include "Arduino.h"
+#include "motor.h"
+#include "PID.h"
 
 typedef enum {
     Inactive,
-    TapeFollowToFirstIdol,
+    TapeFollow,
     RefindTapePostFirstIdol,
     ChickenWire,
     RefindTapePostChickenWire,
-    TapeFollowToSecondIdol,
+    TapeFollowPostRamp,
     RefindTapePostSecondIdol,
-    BackUp,
-    RefindTapeAgain,
+    NavigateArchway,
     Archway,
-    IRStraightFollow,
+    IRFollow,
     DriveToThirdIdol,
     WaitForThirdIdolPickup,
     RefindIRPostThirdIdol,
     IRFollowToFourthIdol,
-    DriveStraight,
     Done,
 } SlaveState;
+
+class Slave {
+  public:
+    Slave(Motor* leftMotor, Motor* rightMotor, PID* tapeFollow, PID* irFollow);
+
+    void determineState();
+
+  private:
+    SlaveState currentState;
+    Motor* leftMotor;
+    Motor* rightMotor;
+    PID* tapeFollow;
+    PID* irFollow;
+    long lastAdvanceTime;
+    long lastEventTime;
+    bool slaveEnabled;
+    bool alreadyStopped;
+
+    void moveForTime(int leftMotorSpeed, int rightMotorSpeed, int timeMillis); 
+
+    void advanceState();
+
+};

@@ -65,8 +65,18 @@ class PID {
      */
     int usePID();
 
+    /**
+     * @brief Refind tape after losing 
+     * 
+     * @param sideToSweep 
+     * @param maxSweepTime 
+     * @return true if tape is found within the max sweeping time, else otherwise
+     */
     bool refindTape(int sideToSweep, long maxSweepTime);
 
+    /**
+     * @brief Reset error values for PID controller
+     */
     void resetPID();
 
      /**
@@ -76,10 +86,6 @@ class PID {
      * @return false otherwise
      */
     bool allOnWhite();
-
-    bool allOnBlack();
-
-    bool centreOnWhite();
 
   private:
     float KP, KD, KI;

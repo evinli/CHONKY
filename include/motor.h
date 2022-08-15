@@ -4,8 +4,7 @@
  * @brief     Header file for motor actuation
  */
 
-#ifndef __MOTOR_H__
-#define __MOTOR_H__
+#pragma once
 
 #include "Arduino.h"
 #include "pins.h"
@@ -44,5 +43,3 @@ class Motor {
     PinName pinA;
     PinName pinB;
 };
-
-#endif //__MOTOR_H__
