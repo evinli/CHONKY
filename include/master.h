@@ -12,36 +12,30 @@
 
 typedef enum {
     Inactive,
-    TapeFollowing,
-    Archway,
-    IRFollowing,
-    EdgeFollowing,
-    TreasurePickup,
-    ZiplineAlign,
-    ZiplineDeploy,
-    ZiplineDismount,
+    FirstIdol,
+    PostFirstIdol,
+    SecondIdol,
+    ThirdIdol,
+    FourthIdol,
+    Done,
 } MasterState;
 
 class Master {
   public: 
-    Master(NewPing* leftUltrasonic, NewPing* rightUltrasonic, Arm* arm);
+    Master(Arm* arm);
 
     void determineState();
-
-    // Used only for debugging
-    void setState(MasterState state);
     
   private:
-    MasterState state;
-    NewPing* leftUltrasonic;
-    NewPing* rightUltrasonic;
+    MasterState currentState;
     Arm* arm;
+    long lastEventTime;
 
-    bool advanceState();
+    void advanceState();
 
     void signalSlaveAdvance();
 
-    void endSlaveSignal();
+    void endSlaveAdvanceSignal();
 
     void enableSlave();
 

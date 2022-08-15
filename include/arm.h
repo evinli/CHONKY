@@ -4,12 +4,13 @@
  * @brief     Header file for arm actuation and control
  */
 
-#ifndef __ARM_H__
-#define __ARM_H__
+#pragma once
 
 #include "Arduino.h"
 #include "motor.h"
 #include "servo.h"
+#include "OLED.h"
+#include <NewPing.h>
 
 class Arm {
   public:
@@ -21,8 +22,9 @@ class Arm {
      * @param claw object for claw servo
      * @param base object for continuous base servo
      * @param shoulderSpeed speed of shoulder joint motor
+     * @param verticalSonar object for vertical sonar
      */
-    Arm(Motor* shoulder, Servo* elbow, Servo* claw, Servo* base, int shoulderSpeed);
+    Arm(Motor* shoulder, Servo* elbow, Servo* claw, Servo* base, int shoulderSpeed, NewPing* verticalSonar);
 
     /**
      * @brief Move the arm to a specified distance away from the chassis at a 
@@ -31,9 +33,13 @@ class Arm {
      * @param distanceFromChassis 
      * @param heightAboveGround 
      */
-    void moveInPlane(double distanceFromChassis, double heightAboveGround);
+    void moveInPlaneShoulderFirst(double distanceFromChassis, double heightAboveGround);
+    void moveInPlaneElbowFirst(double distanceFromChassis, double heightAboveGround);
 
-    bool grabTreasure();
+    /**
+     * @brief Close claw and grasp object
+     */
+    void grasp();
 
     /**
      * @brief Move the shoulder join to a given angle
@@ -49,14 +55,62 @@ class Arm {
      */
     void rotateBase(int angle);
 
-    void sweep(double startingDist, double endingDist, double height);      
+    /**
+     * @brief Get average sonar reading over given number of samples
+     * 
+     * @param numReadings number of samples
+     * @return double average reading
+     */
+    double idolDetect(int numReadings);
 
-  private:
+    /**
+     * @brief Move arm to hover over basket
+     * 
+     * @param dropOffSide side to rotate to
+     */
+    void dropInBasket(int dropOffSide);  
+
+    /**
+     * @brief Move arm into resting position
+     */
+    void goToRestingPos();
+
+    /**
+     * @brief Scan for magnetic fields
+     * 
+     * @return true if magnetic field present, false otherwise 
+     */
+    bool magneticBomb();
+    
+    // UNUSED METHODS, FOR TESTING PURPOSES ONLY
+    void sweep(double startingDist, double endingDist, double height); 
+
+    void sweepAndDetect(double startingDist, double endingDist, double height, int dropOffSide);
+
+    void graspSequence(double startingDistFromChassis, double finalHeight);
+
+    void testShoulder();
+
+    void testElbow();
+
+    void testClaw();
+
+    void testBase();
+
+    void testArm();
+
+    void flatten();    
+
+    bool magnetSweepAndDetect(double startingDist, double endingDist, double height, int dropOffSide);
+    
     Motor* shoulder;
-    Servo* elbow;
     Servo* claw;
     Servo* base;
-    int shoulderSpeed;
+    Servo* elbow;
+    NewPing* verticalSonar;
+
+  private:
+    int shoulderSpeed;    
         
     double getHypotenuse(double heightAboveGround, double distanceFromChassis);
 
@@ -65,7 +119,4 @@ class Arm {
     double getTheta(double hypotenuse, double phi);
 
     double getAlpha(double heightAboveGround, double distanceFromChassis);
-
 };
-
-#endif // __ARM_H__
