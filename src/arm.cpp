@@ -7,15 +7,13 @@
 #include "arm.h"
 
 /////////////////// CONSTRUCTORS ///////////////////
-Arm::Arm(Motor* shoulder, Servo* elbow, Servo* claw, Servo* base, int shoulderSpeed, NewPing* verticalSonar, NewPing* horizontalSonar, OLED* display) {
+Arm::Arm(Motor* shoulder, Servo* elbow, Servo* claw, Servo* base, int shoulderSpeed, NewPing* verticalSonar) {
     this->shoulder = shoulder;
     this->elbow = elbow;
     this->claw = claw;
     this->base = base;
     this->shoulderSpeed = shoulderSpeed;
     this->verticalSonar = verticalSonar;
-    this->horizontalSonar = horizontalSonar;
-    this->display = display;
     pinMode(SHOULDER_POT, INPUT);
     pinMode(BASE_POT, INPUT);
     pinMode(HALL_SENSOR, INPUT_PULLUP);
@@ -60,7 +58,7 @@ void Arm::moveShoulderJoint(int angle) {
 
     while (abs(potValue - inputValue) > POT_MOTOR_ERROR) {
         if ((potValue) < inputValue) {
-            shoulder->setSpeed(-(shoulderSpeed+20));
+            shoulder->setSpeed(-(shoulderSpeed + 20)); // harder to raise shoulder than lower 
             while (potValue < inputValue) {
                 potValue = analogRead(SHOULDER_POT);  
             }
@@ -73,46 +71,54 @@ void Arm::moveShoulderJoint(int angle) {
     }
 
     shoulder->stop();
-    
 }
 
 void Arm::rotateBase(int angle) {
     int potValue = analogRead(BASE_POT);
-    double slope=((double) (BASE_ONE_EIGHTY-BASE_NINETY))/ (double)(180 - 90);
-    int targetValue =((double) angle * slope) - (slope*90-BASE_NINETY);  
+    double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY))/(double)(180 - 90);
+    int targetValue =((double)(angle * slope)) - ((slope * 90) - BASE_NINETY);  
 
     while (abs(potValue - targetValue) > POT_MOTOR_ERROR) {
         if (potValue < targetValue) {
-            base->write(BASE_CW_SPEED);  // change into constants
+            base->write(BASE_CW_SPEED);  
             while (potValue < targetValue) {
                 potValue = analogRead(BASE_POT);
             }
         } else if (potValue > targetValue) {
-            base->write(BASE_CCW_SPEED);  // change into constants
+            base->write(BASE_CCW_SPEED); 
             while (potValue > targetValue) {
                 potValue = analogRead(BASE_POT);
             }
         }
     }
 
-    // base->write(BASE_SERVO_STOP_ANGLE);
     pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
 }
 
+double Arm::idolDetect(int numReadings) {
+    int sum = 0;
+    int reading;
+
+    for (int i = 0; i < numReadings; i++) {
+        reading = verticalSonar->ping_cm();
+        sum += reading;
+    }
+    
+    return (double)(sum)/numReadings;
+}
 
 void Arm::dropInBasket(int dropOffSide) {
-    moveShoulderJoint(110); // trial and error
+    moveShoulderJoint(110);
     delay(500);
     moveShoulderJoint(110);
     delay(500);
     moveShoulderJoint(110);
     delay(250);
     moveShoulderJoint(110);
-    this->elbow->slowWrite(30,8); // trial and error
+    this->elbow->slowWrite(30, 8); 
     rotateBase(dropOffSide);
-    this->elbow->slowWrite(92,8);
+    this->elbow->slowWrite(92, 8);
     claw->write(CLAW_OPEN_ANGLE);
-
     delay(1500);
 }
 
@@ -125,9 +131,7 @@ void Arm::sweep(double startingDist, double endingDist, double height) {
 void Arm::sweepAndDetect(double startingDist, double endingDist, double height, int dropOffSide) {
     for (double i = startingDist; i < endingDist; i += SWEEP_STEP_SIZE) {
         moveInPlaneShoulderFirst(i, height);
-        if (avgSampleSonar(CLAW_SCAN_SAMPLES, this->verticalSonar) < 10) {
-            this->display->clear();
-            this->display->write(0, "Claw Scan Triggered");
+        if (idolDetect(IDOL_DETECT_SAMPLES) < 10) {
             graspSequence(i, height);
             dropInBasket(dropOffSide);
             break;
@@ -157,12 +161,12 @@ void Arm::graspSequence(double startingDist, double currentHeight) {
 }
 
 void Arm::goToRestingPos() {
-    //Move up
+    // Move up
     moveShoulderJoint(110);
     this->elbow->slowWrite(70,8);
     claw->write(CLAW_OPEN_ANGLE);
 
-    //Resting Position
+    // Resting Position
     rotateBase(350);
     delay(300);
     rotateBase(350);
@@ -196,17 +200,17 @@ double Arm::getAlpha(double heightAboveGround, double distanceFromChassis) {
     return (RAD_TO_DEG * atan(y / x));
 }
 
-double Arm::avgSampleSonar(int numReadings, NewPing* sonarSensor) {
-    int sum = 0;
+bool Arm::magneticBomb() {
+    int magnet_detected = 0;
 
-    for (int i = 0; i < numReadings; i++) {
-        sum += sonarSensor->ping_cm();
+    for (int i = 0; i < 20; i++){
+        magnet_detected += digitalRead(HALL_SENSOR);
     }
 
-    return (double)(sum)/numReadings;
+    return magnet_detected < 20;
 }
 
-// TESTING STUFF
+// USED FOR TESTING
 void Arm::testShoulder() {
     this->elbow->slowWrite(0,10);
     for (int i = 0; i < 7; i++) {
@@ -252,15 +256,4 @@ void Arm::testArm() {
     delay(500);
     this->claw->write(130);
     delay(500);
-}
-
-bool Arm::magneticBomb() {
-    int magnet_detected = 0;
-
-    for (int i=0;i<20;i++){
-        magnet_detected+=digitalRead(HALL_SENSOR);
-    }
-
-    return(magnet_detected<20);
-
 }

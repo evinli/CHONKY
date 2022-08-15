@@ -20,28 +20,24 @@ typedef enum {
     Done,
 } MasterState;
 
-// class Master {
-//   public: 
-//     Master(NewPing* leftUltrasonic, NewPing* rightUltrasonic, Arm* arm);
+class Master {
+  public: 
+    Master(Arm* arm);
 
-//     void determineState();
-
-//     // Used only for debugging
-//     void setState(MasterState state);
+    void determineState();
     
-//   private:
-//     MasterState state;
-//     NewPing* leftUltrasonic;
-//     NewPing* rightUltrasonic;
-//     Arm* arm;
+  private:
+    MasterState currentState;
+    Arm* arm;
+    long lastEventTime;
 
-//     bool advanceState();
+    void advanceState();
 
-//     void signalSlaveAdvance();
+    void signalSlaveAdvance();
 
-//     void endSlaveSignal();
+    void endSlaveAdvanceSignal();
 
-//     void enableSlave();
+    void enableSlave();
 
-//     void disableSlave();
-// };
+    void disableSlave();
+};
