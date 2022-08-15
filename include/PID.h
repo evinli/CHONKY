@@ -63,7 +63,29 @@ class PID {
      * 
      * @return current PID error
      */
-    int usePID(int idolCount);
+    int usePID();
+
+    /**
+     * @brief Refind tape after losing 
+     * 
+     * @param sideToSweep 
+     * @param maxSweepTime 
+     * @return true if tape is found within the max sweeping time, else otherwise
+     */
+    bool refindTape(int sideToSweep, long maxSweepTime);
+
+    /**
+     * @brief Reset error values for PID controller
+     */
+    void resetPID();
+
+     /**
+     * @brief Determine if all sensors are on white paint
+     * 
+     * @return true if yes
+     * @return false otherwise
+     */
+    bool allOnWhite();
 
   private:
     float KP, KD, KI;
@@ -113,5 +135,6 @@ class PID {
      * @param rightOffIR right sensor state
      * @return PID error
      */
-    int getIRError(bool leftOffIR, bool centreOffIR, bool rightOffIR);
+    int getIRError(bool leftOffIR, bool rightOffIR);
+
 };
