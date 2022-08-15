@@ -4,8 +4,7 @@
  * @brief     Header file for motor actuation
  */
 
-#ifndef __MOTOR_H__
-#define __MOTOR_H__
+#pragma once
 
 #include "Arduino.h"
 #include "pins.h"
@@ -33,9 +32,14 @@ class Motor {
      */
     void stop();
 
+    /**
+     * @brief Hard brake motors 
+     * 
+     * @param currDir current motor direction
+     */
+    void hardStop(int currDir);
+
   private:
     PinName pinA;
     PinName pinB;
 };
-
-#endif //__MOTOR_H__
