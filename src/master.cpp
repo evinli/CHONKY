@@ -22,8 +22,8 @@ void Master::determineState() {
         case (MasterState::Inactive): {
             // Set arm to first idol detect position
             arm->claw->write(CLAW_OPEN_ANGLE);
-            arm->rotateBase(270);
-            arm->moveInPlaneElbowFirst(8, 32);
+            arm->rotateBase(BASE_IDOL_DETECT_ANGLE);
+            arm->moveInPlaneElbowFirst(IDOL_DETECTION_DIST, IDOL_DETECTION_HEIGHT);
             delay(1000);
             advanceState();
             signalSlaveAdvance();
@@ -34,26 +34,13 @@ void Master::determineState() {
             if (arm->idolDetect(IDOL_DETECT_SAMPLES) < 15) {  
                 if (arm->idolDetect(IDOL_DETECT_SAMPLES) < 15) { // second verification
                     disableSlave();
-                    
-                    // Move into grasp position
-                    arm->rotateBase(280);                
-                    arm->moveInPlaneElbowFirst(13, 30);  
-                    delay(1000); 
 
-                    // Check if idol contains bomb
-                    if (!arm->magneticBomb()) {
-                        arm->grasp();
-                        delay(500);
-                        arm->dropInBasket(RIGHT_DROPOFF_ANGLE);
-                    } else {
-                        delay(1000);
-                        arm->moveInPlaneShoulderFirst(13, 37);
-                    }
+                    // Move into grasp position
+                    arm->rotateBase(BASE_IDOL_DETECT_ANGLE+DETECT_ANGLE_GRASP_OFFSET);    
+                    arm->graspSequence(IDOL_DETECTION_DIST,IDOL_GRASP_HEIGHT, RIGHT_DROPOFF_ANGLE);
 
                     // Reset arm for next idol
-                    arm->rotateBase(270);
-                    arm->moveInPlaneShoulderFirst(13, 37);
-                    arm->claw->write(60);  
+                    arm->rotateBase(BASE_IDOL_DETECT_ANGLE); 
                     advanceState();
                     signalSlaveAdvance();
                     enableSlave();
@@ -63,114 +50,40 @@ void Master::determineState() {
         }
 
         case (MasterState::PostFirstIdol): {
+            // wait to avoid detecting the first idol again in case it is a bomb
             delay(5000);
-            arm->moveInPlaneElbowFirst(12, 33);
+            arm->moveInPlaneElbowFirst(IDOL_DETECTION_DIST, IDOL_DETECTION_HEIGHT);
             advanceState();
             break;
         }
 
         case (MasterState::SecondIdol): {
-            if (arm->idolDetect(20) < 10) {  
+            if (arm->idolDetect(IDOL_DETECT_SAMPLES) < 10) {  
                 disableSlave();
-                arm->rotateBase(278);
-                arm->moveInPlaneElbowFirst(14, 30); 
-                delay(1000);
-
-                if (!arm->magneticBomb()) {
-                    arm->grasp();
-                    delay(500);
-                    arm->dropInBasket(RIGHT_DROPOFF_ANGLE);
-                } else {
-                    delay(1000);
-                    arm->moveInPlaneShoulderFirst(13, 37);
-                }
+                arm->rotateBase(BASE_IDOL_DETECT_ANGLE+DETECT_ANGLE_GRASP_OFFSET);
+                arm->graspSequence(IDOL_DETECTION_DIST,IDOL_GRASP_HEIGHT,RIGHT_DROPOFF_ANGLE);
 
                 // Move arm into resting position
                 arm->goToRestingPos();
-                arm->base->write(BASE_CW_SPEED);
-                delay(250);
-                pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
 
                 advanceState();
                 signalSlaveAdvance();
                 enableSlave();
-                lastEventTime = millis();
+                lastEventTime = millis(); 
             }
             break;
         }
 
         case (MasterState::ThirdIdol): {
+
+            // wait to get past the archway
             if (millis() - lastEventTime > 7500) {
-                arm->moveInPlaneShoulderFirst(16, 35);
-                arm->claw->write(CLAW_OPEN_ANGLE);
-                delay(1000);
-                arm->moveInPlaneShoulderFirst(19, 35);
-                arm->claw->write(CLAW_OPEN_ANGLE);
-                arm->base->write(BASE_CCW_SPEED);
-                delay(250);
-                pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
-                arm->rotateBase(270);
-                arm->rotateBase(270);
-                arm->moveInPlaneShoulderFirst(12, 29);
-
-                bool treasureDetected = false;
-                double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY)) / (double)(180 - 90);
-                int targetValue = ((double)135 * slope) - (slope * 90 - BASE_NINETY);
-
-                // Scan until idol detected
-                while (analogRead(BASE_POT) > targetValue) {
-                    arm->base->write(75);
-                    if (arm->idolDetect(IDOL_DETECT_SAMPLES) < 15) {
-                        treasureDetected = true;
-                        break;
-                    }
-                }
-                pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
-                arm->moveInPlaneShoulderFirst(12, 30);
-                delay(1000);
-                
-                // If treasure detected, check if bomb; else, start second scan
-                if (treasureDetected) {
-                    if (!arm->magneticBomb()) {
-                        arm->grasp();
-                        delay(500);
-                        arm->dropInBasket(RIGHT_DROPOFF_ANGLE);
-                    } 
-                    else {
-                        delay(1000);
-                    }
-                }
-                else {
-                    arm->moveInPlaneShoulderFirst(17, 31);
-                    targetValue = ((double)270 * slope) - (slope * 90 - BASE_NINETY);
-
-                    while (analogRead(BASE_POT) < targetValue) {
-                        arm->base->write(86); 
-                        if (arm->idolDetect(IDOL_DETECT_SAMPLES) < 15) {
-                            treasureDetected = true;
-                            break;
-                        }
-                    }
-                    pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
-                    arm->moveInPlaneShoulderFirst(19, 30);
-                    delay(1000);
-
-                    // If treasure detected, check if bomb
-                    if (treasureDetected) {
-                        if (!arm->magneticBomb()) {
-                            arm->grasp();
-                            delay(500);
-                            arm->dropInBasket(RIGHT_DROPOFF_ANGLE);
-                        }
-                        else {
-                            delay(1000);
-                        }
-                    }      
-                }
+                arm->rotationalSweep(270,135,10,20,IDOL_DETECTION_HEIGHT,RIGHT_DROPOFF_ANGLE,2);
 
                 // Move arm into next idol detect position
-                arm->rotateBase(270);
-                arm->moveInPlaneElbowFirst(20, 35);
+                arm->rotateBase(BASE_IDOL_DETECT_ANGLE);
+                arm->moveInPlaneElbowFirst(IDOL_DETECTION_DIST, IDOL_DETECTION_HEIGHT);
+
                 advanceState();
                 signalSlaveAdvance();
                 lastEventTime = millis();
@@ -179,65 +92,8 @@ void Master::determineState() {
         }
 
         case (MasterState::FourthIdol): {
-            if (millis() - lastEventTime > 7500) {
-                arm->claw->write(CLAW_OPEN_ANGLE);
-                arm->moveInPlaneShoulderFirst(18, 35);
-                arm->rotateBase(315);
-                arm->moveInPlaneShoulderFirst(14, 34);
-                
-                bool treasureDetected = false;
-                double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY)) / (double)(180 - 90);
-                int targetValue = ((double)180 * slope) - (slope * 90 - BASE_NINETY);
-
-                while (analogRead(BASE_POT) > targetValue) {
-                    arm->base->write(75);
-                    if (arm->idolDetect(IDOL_DETECT_SAMPLES) < 15) {
-                        treasureDetected = true;
-                        break;
-                    }
-                }
-                pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
-                arm->moveInPlaneShoulderFirst(16, 30);
-                delay(1000);
-
-                // If treasure detected, check if bomb; else, start second scan
-                if (treasureDetected) {
-                    if (!arm->magneticBomb()) {
-                        arm->grasp();
-                        delay(500);
-                        arm->dropInBasket(RIGHT_DROPOFF_ANGLE);
-                    } 
-                    else {
-                        delay(1000);
-                    }
-                }
-                else {
-                    arm->moveInPlaneShoulderFirst(10, 32);
-                    targetValue = ((double)315 * slope) - (slope * 90 - BASE_NINETY);
-
-                    while (analogRead(BASE_POT) < targetValue) {
-                        arm->base->write(86);
-                        if (arm->idolDetect(IDOL_DETECT_SAMPLES) < 15) {
-                            treasureDetected = true;
-                            break;
-                        }
-                    }
-                    pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT);
-                    arm->moveInPlaneShoulderFirst(14, 30);
-                    delay(1000);
-                
-                    // If treasure detected, check if bomb
-                    if (treasureDetected) {
-                        if (!arm->magneticBomb()) {
-                            arm->grasp();
-                            delay(500);
-                            arm->dropInBasket(RIGHT_DROPOFF_ANGLE);
-                        }
-                        else {
-                            delay(1000);
-                        }
-                    }  
-                }
+            if (millis() - lastEventTime > 6000) {
+                arm->rotationalSweep(315,180,10,20,IDOL_DETECTION_HEIGHT,RIGHT_DROPOFF_ANGLE,2);
                 advanceState();
             }
             break;

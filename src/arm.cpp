@@ -21,7 +21,8 @@ Arm::Arm(Motor* shoulder, Servo* elbow, Servo* claw, Servo* base, int shoulderSp
 
 /////////////////// METHODS ///////////////////
 void Arm::moveInPlaneShoulderFirst(double distanceFromChassis, double heightAboveGround) {
-    double hypotenuse = getHypotenuse(heightAboveGround, distanceFromChassis);;
+    double hypotenuse = getHypotenuse(heightAboveGround, distanceFromChassis);
+    ;
     double phi = getPhi(hypotenuse);
     double theta = getTheta(hypotenuse, phi);
     double alpha = getAlpha(heightAboveGround, distanceFromChassis);
@@ -58,13 +59,13 @@ void Arm::moveShoulderJoint(int angle) {
 
     while (abs(potValue - inputValue) > POT_MOTOR_ERROR) {
         if ((potValue) < inputValue) {
-            shoulder->setSpeed(-(shoulderSpeed + 20)); // harder to raise shoulder than lower 
+            shoulder->setSpeed(-(shoulderSpeed + 20));  // harder to raise shoulder than lower
             while (potValue < inputValue) {
-                potValue = analogRead(SHOULDER_POT);  
+                potValue = analogRead(SHOULDER_POT);
             }
         } else if ((potValue) > inputValue) {
             shoulder->setSpeed(shoulderSpeed);
-            while (potValue> inputValue) {
+            while (potValue > inputValue) {
                 potValue = analogRead(SHOULDER_POT);
             }
         }
@@ -75,17 +76,17 @@ void Arm::moveShoulderJoint(int angle) {
 
 void Arm::rotateBase(int angle) {
     int potValue = analogRead(BASE_POT);
-    double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY))/(double)(180 - 90);
-    int targetValue =((double)(angle * slope)) - ((slope * 90) - BASE_NINETY);  
+    double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY)) / (double)(180 - 90);
+    int targetValue = ((double)(angle * slope)) - ((slope * 90) - BASE_NINETY);
 
     while (abs(potValue - targetValue) > POT_MOTOR_ERROR) {
         if (potValue < targetValue) {
-            base->write(BASE_CW_SPEED);  
+            base->write(BASE_CW_SPEED);
             while (potValue < targetValue) {
                 potValue = analogRead(BASE_POT);
             }
         } else if (potValue > targetValue) {
-            base->write(BASE_CCW_SPEED); 
+            base->write(BASE_CCW_SPEED);
             while (potValue > targetValue) {
                 potValue = analogRead(BASE_POT);
             }
@@ -103,8 +104,8 @@ double Arm::idolDetect(int numReadings) {
         reading = verticalSonar->ping_cm();
         sum += reading;
     }
-    
-    return (double)(sum)/numReadings;
+
+    return (double)(sum) / numReadings;
 }
 
 void Arm::dropInBasket(int dropOffSide) {
@@ -115,7 +116,7 @@ void Arm::dropInBasket(int dropOffSide) {
     moveShoulderJoint(110);
     delay(250);
     moveShoulderJoint(110);
-    this->elbow->slowWrite(30, 8); 
+    this->elbow->slowWrite(30, 8);
     rotateBase(dropOffSide);
     this->elbow->slowWrite(92, 8);
     claw->write(CLAW_OPEN_ANGLE);
@@ -132,47 +133,75 @@ void Arm::sweepAndDetect(double startingDist, double endingDist, double height, 
     for (double i = startingDist; i < endingDist; i += SWEEP_STEP_SIZE) {
         moveInPlaneShoulderFirst(i, height);
         if (idolDetect(IDOL_DETECT_SAMPLES) < 10) {
-            graspSequence(i, height);
-            dropInBasket(dropOffSide);
+            graspSequence(i, height, dropOffSide);
             break;
         }
     }
 }
 
-boolean Arm::magnetSweepAndDetect(double startingDist, double endingDist, double height, int dropOffSide) {
-    for (double i = startingDist; i < endingDist; i += SWEEP_STEP_SIZE) {
-        moveInPlaneShoulderFirst(i, height);
-        if (magneticBomb()) {
-            return false;
-        }
-    }
-    return true;
-}
 
-void Arm::graspSequence(double startingDist, double currentHeight) {
-    // map distance away to additional distance required to travel (i.e. closer needs less distance)
-    // TO CHANGE, THIS IS CURRENLY CONSTANT:
-    double finalDist = startingDist + 4; // trial and error
-    sweep(startingDist, finalDist, currentHeight + 1); // +1 because our height seems to drop as a sweep
-    moveInPlaneShoulderFirst(finalDist, currentHeight); // trial and error
-    delay(1000); // make sure we're fully downright before we grasp
-    grasp(); 
-    delay(1000); // make sure we have idol in our grasp
+void Arm::graspSequence(double graspDist, double graspHeight, int dropoffAngle) {
+    moveInPlaneElbowFirst(graspDist, graspHeight);
+    delay(1000);
+
+    // Check if idol contains bomb
+    if (!magneticBomb()) {
+        this->grasp();
+        delay(500);
+        this->dropInBasket(dropoffAngle);
+    } else {
+        delay(1000);
+        this->moveInPlaneShoulderFirst(BOMB_AVOID_DIST, BOMB_AVOID_HEIGHT);
+    }
 }
 
 void Arm::goToRestingPos() {
     // Move up
     moveShoulderJoint(110);
-    this->elbow->slowWrite(70,8);
+    this->elbow->slowWrite(70, 8);
     claw->write(CLAW_OPEN_ANGLE);
 
     // Resting Position
     rotateBase(350);
     delay(300);
     rotateBase(350);
-    elbow->slowWrite(35,8);
-    this->claw->slowWrite(CLAW_GRASP_ANGLE,8);
+    elbow->slowWrite(35, 8);
+    this->claw->slowWrite(CLAW_GRASP_ANGLE, 8);
     moveShoulderJoint(18);
+}
+
+void Arm::rotationalSweep(int startingAngle, int endingAngle, int startingDist, int finalDist, int sweepHeight, int dropOffAngle, int distIncrementSize) {
+    bool treasureDetected = false;
+    double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY)) / (double)(180 - 90);
+    int targetValue = ((double)endingAngle * slope) - (slope * 90 - BASE_NINETY);
+    int reverseTargetValue=((double)startingAngle * slope) - (slope * 90 - BASE_NINETY);
+    this->rotateBase(startingAngle);
+
+
+    for (int dist = startingDist; dist < finalDist; dist += distIncrementSize) {
+        // Scan until idol detected
+        while (analogRead(BASE_POT) > targetValue) {
+            this->base->write(BASE_CCW_SPEED);
+            if (this->idolDetect(IDOL_DETECT_SAMPLES) < 15) {
+                treasureDetected = true;
+                pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT); //stop the continuous servo
+                graspSequence(dist,IDOL_GRASP_HEIGHT,dropOffAngle);
+                return;
+            }
+        }
+
+        if ((dist += distIncrementSize) < finalDist) {
+            while (analogRead(BASE_POT) < reverseTargetValue) {
+                this->base->write(BASE_CW_SPEED);
+                if (this->idolDetect(IDOL_DETECT_SAMPLES) < 15) {
+                    treasureDetected = true;
+                    pwm_start(BASE_PLATE_SERVO, SERVO_FREQ, 0, TimerCompareFormat_t::RESOLUTION_12B_COMPARE_FORMAT); //stop the cotinuous servo
+                    graspSequence(dist,IDOL_GRASP_HEIGHT,dropOffAngle);
+                    return;
+                }
+            }
+        }
+    }
 }
 
 double Arm::getHypotenuse(double heightAboveGround, double distanceFromChassis) {
@@ -203,7 +232,7 @@ double Arm::getAlpha(double heightAboveGround, double distanceFromChassis) {
 bool Arm::magneticBomb() {
     int magnet_detected = 0;
 
-    for (int i = 0; i < 20; i++){
+    for (int i = 0; i < 20; i++) {
         magnet_detected += digitalRead(HALL_SENSOR);
     }
 
@@ -212,7 +241,7 @@ bool Arm::magneticBomb() {
 
 // USED FOR TESTING
 void Arm::testShoulder() {
-    this->elbow->slowWrite(0,10);
+    this->elbow->slowWrite(0, 10);
     for (int i = 0; i < 7; i++) {
         moveShoulderJoint(i * 15);
         delay(2000);
@@ -221,7 +250,7 @@ void Arm::testShoulder() {
 
 void Arm::testElbow() {
     for (int i = 0; i < 10; i++) {
-        this->elbow->slowWrite(i * 15,10);
+        this->elbow->slowWrite(i * 15, 10);
         delay(2000);
     }
 }
