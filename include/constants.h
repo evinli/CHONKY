@@ -52,6 +52,7 @@
 #define SERVO_ONE_EIGHTY_VALUE 2400
 #define SERVO_RANGE 180
 #define BASE_SERVO_STOP_ANGLE 80
+#define SMOOTH_SLOW_WRITE_TIME 8 //value found experimentally to give smooth and reasonably slow servo actuation
 
 // ARM
 #define FOREARM_LENGTH 17
@@ -69,6 +70,9 @@
 #define IDOL_GRASP_HEIGHT 28
 #define BOMB_AVOID_DIST 13
 #define BOMB_AVOID_HEIGHT 37
+#define SHOULDER_DROPOFF_ANGLE 110
+#define ELBOW_ROTATE_ANGLE 30
+#define ELBOW_DROPOFF_ANGLE 90
 
 // POT TUNING
 #define SHOULDER_NINETY 678
@@ -91,6 +95,7 @@
 // CLAW
 #define CLAW_GRASP_ANGLE 150
 #define CLAW_OPEN_ANGLE 30
+#define HALL_SAMPLE_COUNT 20
 
 // BASE 
 #define RIGHT_SIDE_ANGLE 270

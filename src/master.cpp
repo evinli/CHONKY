@@ -78,7 +78,7 @@ void Master::determineState() {
 
             // wait to get past the archway
             if (millis() - lastEventTime > 7500) {
-                arm->rotationalSweep(270,135,10,20,IDOL_DETECTION_HEIGHT,RIGHT_DROPOFF_ANGLE,2);
+                arm->rotationalSweep(270,135,10,20,IDOL_DETECTION_HEIGHT,RIGHT_DROPOFF_ANGLE,2); //suitable angular and distance values found through testing
 
                 // Move arm into next idol detect position
                 arm->rotateBase(BASE_IDOL_DETECT_ANGLE);
@@ -93,7 +93,7 @@ void Master::determineState() {
 
         case (MasterState::FourthIdol): {
             if (millis() - lastEventTime > 6000) {
-                arm->rotationalSweep(315,180,10,20,IDOL_DETECTION_HEIGHT,RIGHT_DROPOFF_ANGLE,2);
+                arm->rotationalSweep(315,180,10,20,IDOL_DETECTION_HEIGHT,RIGHT_DROPOFF_ANGLE,2); //suitable angular and distance values found through testing
                 advanceState();
             }
             break;

@@ -15,17 +15,18 @@
 
 class Arm {
    public:
+
     Servo* claw;
 
     /**
-     * @brief Construct a new Arm object
+     * @brief Construct a new Arm object.
      *
-     * @param shoulder motor for the shoulder joint
-     * @param elbow object for elbow servo (non continuous), assumes 90 is and 0 is
-     * @param claw object for claw servo
-     * @param base object for continuous base servo
-     * @param shoulderSpeed speed of shoulder joint motor
-     * @param verticalSonar object for vertical sonar
+     * @param shoulder motor for the shoulder joint.
+     * @param elbow object for elbow servo (non continuous), assumes 90 is and 0 is.
+     * @param claw object for claw servo.
+     * @param base object for continuous base servo.
+     * @param shoulderSpeed speed of shoulder joint motor.
+     * @param verticalSonar object for vertical sonar.
      */
     Arm(Motor* shoulder, Servo* elbow, Servo* claw, Servo* base, int shoulderSpeed, NewPing* verticalSonar);
 
@@ -50,12 +51,12 @@ class Arm {
     void moveInPlaneElbowFirst(double distanceFromChassis, double heightAboveGround);
 
     /**
-     * @brief Close claw and grasp object
+     * @brief Close claw and grasp object.
      */
     void grasp();
 
     /**
-     * @brief Move the shoulder join to a given angle
+     * @brief Move the shoulder join to a given angle.
      *
      * @param angle angle to move shoulder joint to. When shoulder linkage is
      *              perpendicular to the base, the angle is 90. When shoulder is 
@@ -65,7 +66,7 @@ class Arm {
     void moveShoulderJoint(int angle);
 
     /**
-     * @brief Rotate the base of the arm to a given angle
+     * @brief Rotate the base of the arm to a given angle.
      *
      * @param angle 0 is when shoulder worm gear shaft faces the back of the chassis
      *              and angle increases as you rotate clockwise (when observing from above).
@@ -74,22 +75,22 @@ class Arm {
     void rotateBase(int angle);
 
     /**
-     * @brief Get average sonar reading over given number of samples
+     * @brief Get average sonar reading over given number of samples.
      *
-     * @param numReadings number of samples
-     * @return double average reading, distances above ___ are assigned distance of 400 (arbitrary large number)
+     * @param numReadings number of samples.
+     * @return double average reading.
      */
     double idolDetect(int numReadings);
 
     /**
-     * @brief Move arm to drop off a grasped object
+     * @brief Actuate arm to drop off a grasped object.
      *
-     * @param dropOffSide side to rotate to
+     * @param dropOffSide anlge to rotate to before dropping off object.
      */
     void dropInBasket(int dropOffSide);
 
     /**
-     * @brief Move arm into resting position to pass through the archway and minimize overall footprint
+     * @brief Move arm into resting position to pass through the archway and minimize overall footprint.
      */
     void goToRestingPos();
 
@@ -110,9 +111,9 @@ class Arm {
     void rotationalSweep(int startingAngle, int endingAngle, int startingDist, int finalDist, int sweepHeight, int dropOffAngle, int distIncrementSize);
 
     /**
-     * @brief Scan for magnetic fields
+     * @brief Scan for magnetic fields.
      *
-     * @return true if magnetic field present, false otherwise
+     * @return true if magnetic field present, false otherwise.
      */
 
     bool magneticBomb();
@@ -128,7 +129,7 @@ class Arm {
 
     // UNUSED METHODS, FOR TESTING PURPOSES ONLY
     /**
-     * @brief move the arm across a distance while maintaining a height
+     * @brief move the arm across a distance while maintaining a height.
      *
      * @param startingDist
      * @param endingDist
@@ -137,12 +138,12 @@ class Arm {
     void sweep(double startingDist, double endingDist, double height);
 
     /**
-     * @brief same as sweep but if an object is detected during the sweep by the downward sonar, pick it up and drop it in the basket
+     * @brief same as sweep but if an object is detected during the sweep by the downward sonar, pick it up and drop it in the basket.
      *
      * @param startingDist
      * @param endingDist
      * @param height
-     * @param dropOffSide
+     * @param dropOffSide angle to rotate base before dropping off a grasped object if found during the sweep.
      */
     void sweepAndDetect(double startingDist, double endingDist, double height, int dropOffSide);
 
@@ -153,19 +154,19 @@ class Arm {
     void testShoulder();
     
     /**
-     * @brief move the elbow in 15 degree increments from ___ to __ to confirm functionality
+     * @brief move the elbow in 15 degree increments from 0 to 90 degrees to confirm functionality.
      * 
      */
     void testElbow();
 
     /**
-     * @brief move claw rippers in 15 degree increments from ___ to ___ to confirm functionality
+     * @brief move claw rippers in 15 degree increments from 45 to 150 to confirm functionality.
      * 
      */
     void testClaw();
 
     /**
-     * @brief move the base in 15 degree increments from ___ to ___ to confirm functionality
+     * @brief move the base in 15 degree increments from 45 to 350  to confirm functionality.
      * 
      */
     void testBase();
