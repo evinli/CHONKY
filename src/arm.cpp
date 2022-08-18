@@ -76,8 +76,8 @@ void Arm::rotateBase(int angle) {
     }
 
     int potValue = analogRead(BASE_POT);
-    double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY)) / (double)(180 - 90);
-    int targetValue = ((double)(angle * slope)) - ((slope * 90) - BASE_NINETY);
+    double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY)) / (double)(180 - 90); 
+    int targetValue = ((double)(angle * slope)) - ((slope * 90) - BASE_NINETY); //input angle in terms of potentiometer values.
 
     while (abs(potValue - targetValue) > POT_MOTOR_ERROR) {
         if (potValue < targetValue) {
@@ -135,7 +135,7 @@ void Arm::sweepAndDetect(double startingDist, double endingDist, double height, 
 
 void Arm::graspSequence(double graspDist, double graspHeight, int dropoffAngle) {
     moveInPlaneElbowFirst(graspDist, graspHeight);
-    delay(1000);
+    delay(1000); //wait to ensure claw is at optimal position for bomb detection.
 
     // Check if idol contains bomb
     if (!magneticBomb()) {
@@ -144,7 +144,7 @@ void Arm::graspSequence(double graspDist, double graspHeight, int dropoffAngle) 
         this->dropInBasket(dropoffAngle);
     } else {
         delay(1000);
-        this->moveInPlaneShoulderFirst(BOMB_AVOID_DIST, BOMB_AVOID_HEIGHT);
+        this->moveInPlaneShoulderFirst(BOMB_AVOID_DIST, BOMB_AVOID_HEIGHT); //move away to prevent accidental contact with bomb
     }
 }
 
@@ -164,8 +164,8 @@ void Arm::goToRestingPos() {
 void Arm::rotationalSweep(int startingAngle, int endingAngle, int startingDist, int finalDist, int sweepHeight, int dropOffAngle, int distIncrementSize) {
     bool treasureDetected = false;
     double slope = ((double)(BASE_ONE_EIGHTY - BASE_NINETY)) / (double)(180 - 90);
-    int targetValue = ((double)endingAngle * slope) - (slope * 90 - BASE_NINETY);
-    int reverseTargetValue = ((double)startingAngle * slope) - (slope * 90 - BASE_NINETY);
+    int targetValue = ((double)endingAngle * slope) - (slope * 90 - BASE_NINETY); //endingAngle in terms of potentiometer values.
+    int reverseTargetValue = ((double)startingAngle * slope) - (slope * 90 - BASE_NINETY); //starting angle in terms of potentiometer values.
     this->rotateBase(startingAngle);
 
     for (int dist = startingDist; dist < finalDist; dist += distIncrementSize) {
@@ -223,7 +223,7 @@ bool Arm::magneticBomb() {
     int magnet_detected = 0;
 
     for (int i = 0; i < HALL_SAMPLE_COUNT; i++) {
-        magnet_detected += digitalRead(HALL_SENSOR);
+        magnet_detected += digitalRead(HALL_SENSOR); //returns 1 if no bomb detected
     }
 
     return (magnet_detected < HALL_SAMPLE_COUNT);
